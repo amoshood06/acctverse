@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // CHECK IF first_name or last_name is missing
         if (empty($user['first_name']) || empty($user['last_name'])) {
             set_flash('info', 'Please complete your profile.');
-            header('Location: complete_profile.php');
+            header('Location: ./user/user_data.php');
             exit;
         }
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user['role'] === 'admin') {
             header('Location: admin_dashboard.php');
         } else {
-            header('Location: dashboard.php');
+            header('Location: ./user/index.php');
         }
         exit;
 
