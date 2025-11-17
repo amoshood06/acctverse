@@ -1,16 +1,19 @@
 <?php
-
+// Start session and enable errors
 session_start();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
+// Include database
 require_once "./db/db.php";
 
 // Flash message functions
 function set_flash($type, $message) {
-    $_SESSION['flash'] = ['type' => $type, 'message' => $message];
+    $_SESSION['flash'] = [
+        'type' => $type,
+        'message' => $message
+    ];
 }
 
 function get_flash() {
@@ -35,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password      = $_POST['password'] ?? '';
     $confirmPass   = $_POST['confirm_password'] ?? '';
 
-
+    // Validation
     if (!$full_name || !$username || !$email || !$mobile || !$password) {
         set_flash("error", "All fields are required.");
         header("Location: " . $_SERVER['PHP_SELF']);
@@ -55,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     try {
-        // Check for existing email/username
+        // Check for duplicate email or username
         $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
         $stmt->execute([$email, $username]);
         if ($stmt->fetch()) {
@@ -64,40 +67,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
         }
 
-        // Hash password & generate verification token
+        // Hash password and generate token
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
         $token = bin2hex(random_bytes(32));
 
-        // Insert user into database
+        // Insert user
         $stmt = $pdo->prepare("
             INSERT INTO users (full_name, username, email, mobile_code, mobile, country, password_hash, role, is_verified, verify_token)
             VALUES (?, ?, ?, ?, ?, ?, ?, 'user', 0, ?)
         ");
         $stmt->execute([$full_name, $username, $email, $mobile_code, $mobile, $country, $password_hash, $token]);
 
-        // Send verification email
-        $subject = "Verify Your AcctVerse Account";
-        $verifyLink = "https://acctverse.com/verify.php?token=" . $token;
-        $message = "
-            Hello $full_name,<br><br>
-            Thank you for registering. Please verify your account by clicking the link below:<br>
-            <a href='$verifyLink'>Verify Account</a><br><br>
-            If you did not register, please ignore this email.<br><br>
-            Regards,<br>
-            AcctVerse Team
-        ";
-
-        $headers  = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: noreply@acctverse.com\r\n";
-
-        if (!mail($email, $subject, $message, $headers)) {
-            set_flash("error", "Registration successful, but failed to send verification email. Contact support.");
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit;
-        }
-
-        set_flash("success", "Registration successful! Please check your email to verify your account.");
+        set_flash("success", "Registration successful! You can now login.");
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
 
@@ -109,7 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 ?>
 
-<!-- HTML Registration Form -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -127,28 +107,58 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <h2 class="text-2xl font-bold text-center mb-6">Create Account</h2>
 
     <form action="" method="POST" class="space-y-4">
-        <input name="full_name" type="text" placeholder="Full Name" required class="w-full px-3 py-2 border rounded">
-        <input name="username" type="text" placeholder="Username" required class="w-full px-3 py-2 border rounded">
-        <input name="email" type="email" placeholder="Email" required class="w-full px-3 py-2 border rounded">
-        
-        <select name="country" id="countrySelect" required class="w-full border px-3 py-2 rounded">
-            <option value="">-- Select Country --</option>
-            <option value="Nigeria" data-dial="234">Nigeria (+234)</option>
-            <option value="Ghana" data-dial="233">Ghana (+233)</option>
-            <option value="Kenya" data-dial="254">Kenya (+254)</option>
-            <option value="South Africa" data-dial="27">South Africa (+27)</option>
-            <option value="USA" data-dial="1">USA (+1)</option>
-            <option value="UK" data-dial="44">UK (+44)</option>
-        </select>
-
-        <div class="flex">
-            <span id="mobileCode" class="px-4 py-2 bg-gray-200 border rounded-l">+</span>
-            <input type="hidden" name="mobile_code" id="mobileCodeInput">
-            <input type="text" name="mobile" placeholder="Mobile Number" required class="w-full px-3 py-2 border rounded-r">
+        <div>
+            <label class="block text-sm font-medium">Full Name</label>
+            <input name="full_name" type="text" required class="w-full px-3 py-2 border rounded">
         </div>
 
-        <input name="password" type="password" placeholder="Password" required class="w-full px-3 py-2 border rounded">
-        <input name="confirm_password" type="password" placeholder="Confirm Password" required class="w-full px-3 py-2 border rounded">
+
+        <div>
+            <label class="block text-sm font-medium">Username</label>
+            <input name="username" type="text" required class="w-full px-3 py-2 border rounded">
+        </div>
+
+
+        <div>
+            <label class="block text-sm font-medium">Email</label>
+            <input name="email" type="email" required class="w-full px-3 py-2 border rounded">
+        </div>
+
+
+        <div>
+            <label class="block text-sm font-medium">Country</label>
+            <select name="country" id="countrySelect" required class="w-full border px-3 py-2 rounded">
+                <option value="">-- Select Country --</option>
+                <option value="Nigeria" data-dial="234">Nigeria (+234)</option>
+                <option value="Ghana" data-dial="233">Ghana (+233)</option>
+                <option value="Kenya" data-dial="254">Kenya (+254)</option>
+                <option value="South Africa" data-dial="27">South Africa (+27)</option>
+                <option value="USA" data-dial="1">USA (+1)</option>
+                <option value="UK" data-dial="44">UK (+44)</option>
+            </select>
+        </div>
+
+  
+        <div>
+            <label class="block text-sm font-medium">Mobile Number</label>
+            <div class="flex">
+                <span id="mobileCode" class="px-4 py-2 bg-gray-200 border rounded-l">+</span>
+                <input type="hidden" name="mobile_code" id="mobileCodeInput">
+                <input type="text" name="mobile" required class="w-full px-3 py-2 border rounded-r">
+            </div>
+        </div>
+
+
+        <div>
+            <label class="block text-sm font-medium">Password</label>
+            <input name="password" type="password" required class="w-full px-3 py-2 border rounded">
+        </div>
+
+        
+        <div>
+            <label class="block text-sm font-medium">Confirm Password</label>
+            <input name="confirm_password" type="password" required class="w-full px-3 py-2 border rounded">
+        </div>
 
         <button class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Register</button>
     </form>
