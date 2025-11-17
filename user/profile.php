@@ -68,8 +68,8 @@ $flash = get_flash();
 <!-- Navigation -->
 <nav class="bg-white shadow-sm sticky top-0 z-10">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <span class="font-bold text-lg">AcctGlobe</span>
-        <a href="dashboard.php" class="text-orange-500 font-medium">← Back to Dashboard</a>
+        <img src="assets/image/acctverse.png" alt="" class="w-[150px]">
+        <a href="index.php" class="text-orange-500 font-medium">← Back to Dashboard</a>
     </div>
 </nav>
 
@@ -136,7 +136,7 @@ $flash = get_flash();
                 <input type="text" name="city" value="<?= htmlspecialchars($user['city'] ?? ''); ?>" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-orange-500">
             </div>
 
-            <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition">Update Profile</button>
+            <button type="submit" class="w-full bg-red-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition">Update Profile</button>
         </form>
     </div>
 </div>

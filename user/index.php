@@ -1,16 +1,36 @@
 <?php
 session_start();
-require_once "../db/db.php"; // make sure $pdo is available
+require_once "../db/db.php";  // Ensure $pdo is initialized
 require_once "../flash.php";
 
+// Redirect if user is not logged in
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit;
 }
 
+// Get user data from session
 $user = $_SESSION['user'];
+
+// Get flash messages (if any)
 $flash = get_flash();
+
+// Fetch latest user data from DB (optional, ensures balance and info are up-to-date)
+try {
+    $stmt = $pdo->prepare("SELECT first_name, last_name, email, balance, address, state, zip_code, city FROM users WHERE id = ?");
+    $stmt->execute([$user['id']]);
+    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($userData) {
+        // Update session user info to latest from DB
+        $_SESSION['user'] = array_merge($_SESSION['user'], $userData);
+        $user = $_SESSION['user'];
+    }
+} catch (Exception $e) {
+    set_flash("error", "Unable to fetch user data.");
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +47,7 @@ $flash = get_flash();
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-orange-500 rounded-full"></div>
-                <span class="font-bold text-lg">Acctverse</span>
+                <img src="assets/image/acctverse.png" alt="" class="w-[150px]">
             </div>
             <div class="hidden md:flex items-center gap-8">
                 <a href="#" class="text-blue-900 font-medium hover:text-red-500">Dashboard</a>
@@ -41,7 +61,7 @@ $flash = get_flash();
                 <a href="change-password.php" class="text-gray-600 hover:text-red-500">Password</a>
             </div>
             <form method="POST" action="logout.php">
-            <button class="bg-orange-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">
+            <button class="bg-red-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">
                 Logout
             </button>
         </form>
@@ -114,13 +134,13 @@ Toastify({
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Balance Card -->
             <div class="bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-lg shadow-sm p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm opacity-90">Balance</p>
-                        <h3 class="text-3xl font-bold">₦0.00</h3>
+                        <h3 class="text-3xl font-bold">₦<?= number_format($user['balance'], 2); ?></h3>
                     </div>
                     <div class="w-12 h-12 bg-white bg-opacity-30 rounded-full flex items-center justify-center">💳</div>
                 </div>
