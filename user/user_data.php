@@ -1,6 +1,6 @@
 <?php
-require_once "./db/db.php";
-require_once "./flash.php";
+require_once "../db/db.php";
+require_once "../flash.php";
 session_start();
 
 // Redirect if user not logged in
