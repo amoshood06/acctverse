@@ -22,13 +22,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         set_flash("error", "Invalid email format.");
-        header("Location: register.php");
+        header("Location: ./register.php");
         exit;
     }
 
     if ($password !== $confirmPass) {
         set_flash("error", "Passwords do not match.");
-        header("Location: register.php");
+        header("Location: ./register.php");
         exit;
     }
 
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $emailCheck->execute([$email]);
         if ($emailCheck->fetch()) {
             set_flash("error", "Email already exists.");
-            header("Location: register.php");
+            header("Location: ./register.php");
             exit;
         }
 
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $userCheck->execute([$username]);
         if ($userCheck->fetch()) {
             set_flash("error", "Username already taken.");
-            header("Location: register.php");
+            header("Location: ./register.php");
             exit;
         }
 
