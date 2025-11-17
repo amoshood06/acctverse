@@ -91,16 +91,16 @@ $isLoggedIn = isset($_SESSION['user_id']) || isset($_COOKIE['user_token']);
 
     <!-- Category dropdown -->
     <ul id="categoryMenu" class="dropdown--menu hidden absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5" style="z-index:9999;">
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/facebook/47" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/vpn-premium/48" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">VPN (PREMIUM)</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/facebook-random-countries/49" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK (RANDOM C...)</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/facebook-other-countries/50" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK (OTHER CO...)</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/google-voice/51" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">GOOGLE VOICE</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/instagram/52" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">INSTAGRAM</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/facebook-dating/53" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK DATING</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/twitter/54" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TWITTER</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/acctglobe-giveaway/56" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ACCTGLOBE GIVEAWAY...</a></li>
-      <li class="dropdown--menu__item"><a href="https://acctglobe.com/category-products/tiktok/57" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TIKTOK</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">VPN (PREMIUM)</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK (RANDOM C...)</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK (OTHER CO...)</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">GOOGLE VOICE</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">INSTAGRAM</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK DATING</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TWITTER</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ACCTGLOBE GIVEAWAY...</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TIKTOK</a></li>
     </ul>
   </div>
 
