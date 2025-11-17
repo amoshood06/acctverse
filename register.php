@@ -115,6 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
 <meta charset="UTF-8">
 <title>Register - AcctVerse</title>
+<link rel="shortcut icon" href="assets/image/a.png" type="image/x-icon">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -150,7 +151,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <input name="password" type="password" placeholder="Password" required class="w-full px-3 py-2 border rounded">
         <input name="confirm_password" type="password" placeholder="Confirm Password" required class="w-full px-3 py-2 border rounded">
 
-        <button class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Register</button>
+        <button class="w-full bg-red-500 text-white py-2 rounded hover:bg-green-700">Register</button>
     </form>
 
     <p class="text-center text-sm mt-4">

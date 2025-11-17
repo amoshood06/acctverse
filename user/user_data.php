@@ -39,8 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Data - AcctGlobe</title>
+<title>User Data - Acctverse</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="shortcut icon" href="assets/image/a.png" type="image/x-icon">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <nav class="bg-white shadow-sm sticky top-0 z-10">
   <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
     <span class="font-bold text-lg">AcctGlobe</span>
-    <a href="dashboard.php" class="text-orange-500 font-medium">← Back to Dashboard</a>
+    <a href="index.php" class="text-red-500 font-medium">← Back to Dashboard</a>
   </div>
 </nav>
 
@@ -67,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input name="last_name" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-orange-500">
         </div>
       </div>
-      <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition">Submit</button>
+      <button type="submit" class="w-full bg-red-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition">Submit</button>
     </form>
   </div>
 </div>
