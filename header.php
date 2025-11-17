@@ -1,10 +1,11 @@
 <?php
 session_start();
 
-// Check if user is logged in
+// Example: user session array
+// $_SESSION['user'] = ['name'=>'John Doe','role'=>'user'];
 $isLoggedIn = isset($_SESSION['user']);
 $userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
-$userRole = $isLoggedIn ? $_SESSION['user']['role'] : '';
+// Check if user is logged in
 ?>
 
 <div class="header_one w-full bg-white justify-between flex items-center border-b border-gray-300 pl-[80px] pr-[80px] h-[80px]">
