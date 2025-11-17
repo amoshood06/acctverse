@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $message = "
             Hello $full_name,<br><br>
             Please verify your account by clicking the link below:<br>
-            <a href='https://yourdomain.com/verify.php?token=$token'>
+            <a href='https://acctverse.com/verify.php?token=$token'>
             CLICK HERE TO VERIFY
             </a><br><br>
             Thank you.
@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $headers  = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: noreply@yourdomain.com\r\n";
+        $headers .= "From: noreply@acctverse.com\r\n";
 
         mail($email, $subject, $message, $headers);
 
