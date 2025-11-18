@@ -1,10 +1,8 @@
 <?php
-
 session_start();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
 
 require_once "./db/db.php";
 
@@ -24,8 +22,33 @@ function get_flash() {
 
 $flash = get_flash();
 
-// Handle form submission
+
+// -----------------------------------------------------------
+// ✅ REFERRAL SYSTEM
+// -----------------------------------------------------------
+
+// Generate new user referral code
+$refCode = substr(sha1(uniqid()), 0, 10);
+
+// Detect referral link: ?ref=ABCDE12345
+$referredBy = null;
+
+if (isset($_GET['ref']) && !empty($_GET['ref'])) {
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE referral_code = ?");
+    $stmt->execute([$_GET['ref']]);
+    $refUser = $stmt->fetch();
+
+    if ($refUser) {
+        $referredBy = $refUser['id'];
+    }
+}
+
+
+// -----------------------------------------------------------
+// ✅ HANDLE REGISTRATION FORM
+// -----------------------------------------------------------
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
     $full_name     = trim($_POST['full_name'] ?? '');
     $username      = trim($_POST['username'] ?? '');
     $email         = trim($_POST['email'] ?? '');
@@ -34,7 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $country       = trim($_POST['country'] ?? '');
     $password      = $_POST['password'] ?? '';
     $confirmPass   = $_POST['confirm_password'] ?? '';
-
 
     if (!$full_name || !$username || !$email || !$mobile || !$password) {
         set_flash("error", "All fields are required.");
@@ -55,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     try {
-        // Check for existing email/username
+        // Check for duplicate email/username
         $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
         $stmt->execute([$email, $username]);
         if ($stmt->fetch()) {
@@ -64,38 +86,46 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
         }
 
-        // Hash password & generate verification token
+        // Hash Password + Generate Verification Token
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
         $token = bin2hex(random_bytes(32));
 
-        // Insert user into database
+        // Insert new user with referral code + referredBy
         $stmt = $pdo->prepare("
-            INSERT INTO users (full_name, username, email, mobile_code, mobile, country, password_hash, role, is_verified, verify_token)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'user', 0, ?)
+            INSERT INTO users 
+            (full_name, username, email, mobile_code, mobile, country, password_hash, role, is_verified, verify_token, referral_code, referred_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'user', 0, ?, ?, ?)
         ");
-        $stmt->execute([$full_name, $username, $email, $mobile_code, $mobile, $country, $password_hash, $token]);
+
+        $stmt->execute([
+            $full_name,
+            $username,
+            $email,
+            $mobile_code,
+            $mobile,
+            $country,
+            $password_hash,
+            $token,
+            $refCode,
+            $referredBy
+        ]);
 
         // Send verification email
         $subject = "Verify Your AcctVerse Account";
         $verifyLink = "https://acctverse.com/verify.php?token=" . $token;
+
         $message = "
             Hello $full_name,<br><br>
-            Thank you for registering. Please verify your account by clicking the link below:<br>
+            Thank you for registering. Please verify your account:<br>
             <a href='$verifyLink'>Verify Account</a><br><br>
-            If you did not register, please ignore this email.<br><br>
-            Regards,<br>
-            AcctVerse Team
+            Regards,<br> AcctVerse Team
         ";
 
         $headers  = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8\r\n";
         $headers .= "From: noreply@acctverse.com\r\n";
 
-        if (!mail($email, $subject, $message, $headers)) {
-            set_flash("error", "Registration successful, but failed to send verification email. Contact support.");
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit;
-        }
+        mail($email, $subject, $message, $headers);
 
         set_flash("success", "Registration successful! Please check your email to verify your account.");
         header("Location: " . $_SERVER['PHP_SELF']);
@@ -108,6 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
+
 
 <!-- HTML Registration Form -->
 <!DOCTYPE html>

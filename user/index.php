@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 require_once "../db/db.php";  // Ensure $pdo is initialized
 require_once "../flash.php";
@@ -15,21 +15,48 @@ $user = $_SESSION['user'];
 // Get flash messages (if any)
 $flash = get_flash();
 
-// Fetch latest user data from DB (optional, ensures balance and info are up-to-date)
+// -----------------------------------------------------
+// ✅ FETCH LATEST USER DATA
+// -----------------------------------------------------
 try {
-    $stmt = $pdo->prepare("SELECT first_name, last_name, email, balance, address, state, zip_code, city FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT first_name, last_name, email, balance, address, state, zip_code, city 
+                           FROM users WHERE id = ?");
     $stmt->execute([$user['id']]);
     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($userData) {
-        // Update session user info to latest from DB
         $_SESSION['user'] = array_merge($_SESSION['user'], $userData);
         $user = $_SESSION['user'];
     }
 } catch (Exception $e) {
     set_flash("error", "Unable to fetch user data.");
 }
+
+// -----------------------------------------------------
+// ✅ FETCH USER TICKETS COUNT
+// -----------------------------------------------------
+try {
+    $ticketStmt = $pdo->prepare("SELECT COUNT(*) AS total_tickets FROM tickets WHERE user_id = ?");
+    $ticketStmt->execute([$user['id']]);
+    $totalTickets = $ticketStmt->fetch(PDO::FETCH_ASSOC)['total_tickets'] ?? 0;
+} catch (Exception $e) {
+    $totalTickets = 0;
+}
+
+// -----------------------------------------------------
+// ✅ FETCH REFERRAL COUNT
+// -----------------------------------------------------
+try {
+    $refStmt = $pdo->prepare("SELECT COUNT(*) AS total_referrals FROM referrals WHERE referred_by = ?");
+    $refStmt->execute([$user['id']]);
+    $referralCount = $refStmt->fetch(PDO::FETCH_ASSOC)['total_referrals'] ?? 0;
+} catch (Exception $e) {
+    $referralCount = 0;
+}
+
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -151,7 +178,7 @@ Toastify({
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm opacity-90">Tickets</p>
-                        <h3 class="text-3xl font-bold">0</h3>
+                        <h3 class="text-3xl font-bold"><?= htmlspecialchars($totalTickets) ?></h3>
                     </div>
                     <div class="w-12 h-12 bg-white bg-opacity-30 rounded-full flex items-center justify-center">🎫</div>
                 </div>
@@ -162,7 +189,7 @@ Toastify({
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm opacity-90">Referrals</p>
-                        <h3 class="text-3xl font-bold">0</h3>
+                        <h3 class="text-3xl font-bold"><?= $referralCount ?></h3>
                     </div>
                     <div class="w-12 h-12 bg-white bg-opacity-30 rounded-full flex items-center justify-center">👥</div>
                 </div>

@@ -98,15 +98,17 @@ $userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
     <!-- Category dropdown -->
     <ul id="categoryMenu" class="dropdown--menu hidden absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5" style="z-index:9999;">
       <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">VPN (PREMIUM)</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK (RANDOM C...)</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK (OTHER CO...)</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">GOOGLE VOICE</a></li>
+
       <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">INSTAGRAM</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK DATING</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TWITTER</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ACCTGLOBE GIVEAWAY...</a></li>
+      
       <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TIKTOK</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SNAPCHAT</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">RADDIT</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">LINKEDIN</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ENTERTAINMENT</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TEXTING APPS</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">VPN/PROXY</a></li>
+      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ACCTVERSE GIVEAWAY...</a></li>
     </ul>
   </div>
 
