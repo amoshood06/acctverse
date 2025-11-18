@@ -1,10 +1,9 @@
-<?php
-// login.php
+<?php 
 require_once './db/db.php';
 require_once 'flash.php';
 session_start();
 
-// Handle POST request
+// Handle Login Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $input = trim($_POST['email'] ?? ''); // email OR username
@@ -17,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Detect whether input is email or username
+        // Detect email or username
         if (strpos($input, '@') !== false) {
             $stmt = $pdo->prepare("
                 SELECT id, full_name, first_name, last_name, email, username, password_hash, role, is_verified 
@@ -36,14 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch();
 
         if (!$user) {
-            set_flash('error', 'Invalid credentials.');
+            set_flash('error', 'Invalid login details.');
             header('Location: login.php');
             exit;
         }
 
-        // Verify password
+        // Check password
         if (!password_verify($password, $user['password_hash'])) {
-            set_flash('error', 'Invalid credentials.');
+            set_flash('error', 'Invalid login details.');
             header('Location: login.php');
             exit;
         }
@@ -55,28 +54,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Set session
+        // Set SESSION
         $_SESSION['user'] = [
             'id'   => $user['id'],
             'name' => $user['full_name'],
             'role' => $user['role']
         ];
 
-        // CHECK IF first_name or last_name is missing
+        // -------------------------------
+        // ✅ RULE: Admin goes straight to admin dashboard
+        // -------------------------------
+        if ($user['role'] === 'admin') {
+            set_flash('success', 'Admin login successful!');
+            header('Location: ./admin/index.php');
+            exit;
+        }
+
+        // -------------------------------
+        // ✅ RULE: Only USERS must complete profile
+        // -------------------------------
         if (empty($user['first_name']) || empty($user['last_name'])) {
             set_flash('info', 'Please complete your profile.');
             header('Location: ./user/user_data.php');
             exit;
         }
 
+        // -------------------------------
+        // USER LOGIN SUCCESS
+        // -------------------------------
         set_flash('success', 'Login successful!');
-
-        // Redirect based on role
-        if ($user['role'] === 'admin') {
-            header('Location: ./admin/index.php');
-        } else {
-            header('Location: ./user/index.php');
-        }
+        header('Location: ./user/index.php');
         exit;
 
     } catch (Exception $e) {
@@ -86,9 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// GET Request — show login form
+// GET request -> show login form
 $flash = get_flash();
 ?>
+
+
 
 
 <!DOCTYPE html>
