@@ -5,9 +5,14 @@ require_once "../flash.php";
 
 // Redirect if admin is not logged in
 if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
+// Get user data from session
+$user = $_SESSION['admin'];
+
+// Get flash messages (if any)
+$flash = get_flash();
 
 // =======================
 // FETCH DASHBOARD DATA
