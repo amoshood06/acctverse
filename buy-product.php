@@ -9,17 +9,13 @@ if (!isset($_SESSION['user']['id'])) {
     exit();
 }
 
-$user_id = $_SESSION['user']['id'];
-$userName = $_SESSION['user']['name'];
-$userRole = $_SESSION['user']['role'];
-
-// ---- CHECK PRODUCT ID ----
-if (!isset($_GET['product_id'])) {
-    die("Invalid product");
+if (!isset($_POST['product_id']) || !isset($_POST['quantity'])) {
+    die("Invalid request");
 }
 
-$product_id = (int)$_GET['product_id'];
-$quantity = 1;
+$user_id = $_SESSION['user']['id'];
+$product_id = (int)$_POST['product_id'];
+$quantity = (int)$_POST['quantity'];
 
 // ---- FETCH PRODUCT INFORMATION ----
 $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
