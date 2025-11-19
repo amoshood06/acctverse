@@ -77,7 +77,7 @@ try {
                 <img src="assets/image/acctverse.png" alt="" class="w-[150px]">
             </div>
             <div class="hidden md:flex items-center gap-8">
-                <a href="./index.php" class="text-blue-900 font-medium hover:text-red-500">Home</a>
+                <a href="../index.php" class="text-blue-900 font-medium hover:text-red-500">Home</a>
                 <a href="products.php" class="text-gray-600 hover:text-red-500">Products</a>
                 <a href="sms-verification.php" class="text-gray-600 hover:text-red-500">SMS Verification</a>
                 <a href="fund-wallet.php" class="text-gray-600 hover:text-red-500">Fund</a>
