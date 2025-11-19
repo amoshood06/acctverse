@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "./db/db.php"; // database connection
+require_once "./db/db.php"; // MySQLi connection ($conn)
 
 // ---- CHECK IF USER IS LOGGED IN ----
 if (!isset($_SESSION['user_id'])) {
@@ -15,7 +15,7 @@ if (!isset($_GET['product_id'])) {
     die("Invalid product");
 }
 
-$product_id = $_GET['product_id'];
+$product_id = (int)$_GET['product_id'];
 $quantity = 1; // default purchase quantity
 
 // ---- FETCH PRODUCT INFORMATION ----
@@ -23,12 +23,13 @@ $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
 $stmt->bind_param("i", $product_id);
 $stmt->execute();
 $product = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
 if (!$product) {
     die("Product not found");
 }
 
-$price = $product['price'];
+$price = (float)$product['price'];
 $total_amount = $price * $quantity;
 
 // ---- GET USER WALLET BALANCE ----
@@ -36,8 +37,9 @@ $stmt2 = $conn->prepare("SELECT balance FROM users WHERE id = ?");
 $stmt2->bind_param("i", $user_id);
 $stmt2->execute();
 $userData = $stmt2->get_result()->fetch_assoc();
+$stmt2->close();
 
-$balance = $userData['balance'];
+$balance = (float)$userData['balance'];
 
 // ---- CHECK IF BALANCE IS ENOUGH ----
 if ($balance < $total_amount) {
@@ -47,10 +49,10 @@ if ($balance < $total_amount) {
 
 // ---- DEDUCT FROM WALLET ----
 $newBalance = $balance - $total_amount;
-
 $stmt3 = $conn->prepare("UPDATE users SET balance = ? WHERE id = ?");
 $stmt3->bind_param("di", $newBalance, $user_id);
 $stmt3->execute();
+$stmt3->close();
 
 // ---- INSERT INTO ORDERS TABLE ----
 $stmt4 = $conn->prepare("
@@ -61,9 +63,9 @@ $stmt4->bind_param("iidid", $user_id, $product_id, $price, $quantity, $total_amo
 $stmt4->execute();
 
 $order_id = $stmt4->insert_id;
+$stmt4->close();
 
 // ---- REDIRECT TO SUCCESS PAGE ----
 header("Location: order-success.php?order_id=" . $order_id);
 exit();
-
 ?>
