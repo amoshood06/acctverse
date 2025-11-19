@@ -7,212 +7,170 @@ require_once "../flash.php";
 //  ADMIN AUTH CHECK
 // ==================================================
 
-// If no user is logged in OR user is not admin → kick out
+// Ensure user exists AND is admin
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     set_flash("error", "Unauthorized access.");
     header("Location: ../login.php");
     exit;
 }
 
-// Get logged-in admin data
-$admin = $_SESSION['user']; 
+// Current admin info
+$admin = $_SESSION['user'];
+
+// Fetch products
+$stmt = $pdo->query("SELECT * FROM products ORDER BY id DESC");
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Flash message (load once)
 $flash = get_flash();
-
-// ==================================================
-//  DASHBOARD QUERIES (SAFE EXECUTION)
-// ==================================================
-
-try {
-
-    // 1. Total Users
-    $stmt = $pdo->query("SELECT COUNT(*) FROM users");
-    $totalUsers = $stmt->fetchColumn();
-
-    // 2. Total Transactions
-    $stmt = $pdo->query("SELECT COUNT(*) FROM transactions");
-    $totalTransactions = $stmt->fetchColumn();
-
-    // 3. Total Revenue (completed transactions)
-    $stmt = $pdo->query("SELECT SUM(amount) FROM transactions WHERE status = 'completed'");
-    $totalRevenue = $stmt->fetchColumn() ?? 0;
-
-    // 4. Pending Orders
-    $stmt = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'pending'");
-    $pendingOrders = $stmt->fetchColumn();
-
-    // 5. Recent Transactions
-    $stmt = $pdo->query("
-        SELECT t.*, u.first_name, u.last_name 
-        FROM transactions t
-        JOIN users u ON u.id = t.user_id
-        ORDER BY t.id DESC
-        LIMIT 6
-    ");
-    $recentTransactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // 6. Recent Users
-    $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 6");
-    $recentUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-} catch (Exception $e) {
-    set_flash("error", "Error loading dashboard data.");
-    $totalUsers = $totalTransactions = $totalRevenue = $pendingOrders = 0;
-    $recentTransactions = $recentUsers = [];
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - AcctGlobe</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>Manage Products - Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+@keyframes slideIn {
+    from { transform: translateX(120%); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in { animation: slideIn .4s ease-out; }
+</style>
+
 </head>
+<body class="bg-gray-100">
 
-<body class="bg-gray-50">
+<!-- FLASH TOAST -->
+<?php if (!empty($flash)): ?>
+<div id="toast"
+     class="fixed top-5 right-5 z-50 px-6 py-3 rounded-lg shadow-lg text-white 
+            <?= ($flash['type'] === 'success') ? 'bg-green-600' : 'bg-red-600' ?> 
+            animate-slide-in">
+    <?= htmlspecialchars($flash['message']); ?>
+</div>
 
-    <!-- Admin Navigation -->
-    <nav class="bg-blue-900 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-orange-500 rounded-full"></div>
-                <span class="text-white font-bold text-lg">AcctGlobe Admin</span>
-            </div>
+<script>
+setTimeout(() => {
+    const toast = document.getElementById('toast');
+    toast.style.opacity = "0";
+    toast.style.transition = "0.5s";
+    setTimeout(() => toast.remove(), 600);
+}, 3000);
+</script>
+<?php endif; ?>
 
-            <div class="hidden md:flex items-center gap-8">
-                <a href="index.php" class="text-orange-500 font-medium">Dashboard</a>
-                <a href="admin-users.php" class="text-gray-300 hover:text-orange-500">Users</a>
-                <a href="admin-transactions.php" class="text-gray-300 hover:text-orange-500">Transactions</a>
-                 <a href="manage-products.php" class="text-gray-300 hover:text-orange-500">Add product</a>
-                <a href="admin-orders.php" class="text-gray-300 hover:text-orange-500">Orders</a>
-                <a href="admin-reports.php" class="text-gray-300 hover:text-orange-500">Reports</a>
-                <a href="admin-settings.php" class="text-gray-300 hover:text-orange-500">Settings</a>
-            </div>
 
-            <a href="logout.php" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">Logout</a>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
+<!-- PAGE HEADER -->
+<div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-blue-900">Manage Products</h1>
 
-        <h1 class="text-3xl font-bold text-blue-900 mb-8">Admin Dashboard</h1>
+    <a href="add-product.php" 
+       class="hidden sm:block bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-orange-600">
+        ➕ Add Product
+    </a>
+</div>
 
-        <!-- METRICS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-            <!-- Total Users -->
-            <div class="bg-white shadow-sm border-l-4 border-blue-500 rounded-lg p-6">
-                <p class="text-gray-600">Total Users</p>
-                <h3 class="text-3xl text-blue-900 font-bold"><?= number_format($totalUsers) ?></h3>
-            </div>
+<!-- SEARCH + ADD BUTTON -->
+<div class="max-w-6xl mx-auto px-4 mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
 
-            <!-- Total Transactions -->
-            <div class="bg-white shadow-sm border-l-4 border-orange-500 rounded-lg p-6">
-                <p class="text-gray-600">Total Transactions</p>
-                <h3 class="text-3xl text-blue-900 font-bold"><?= number_format($totalTransactions) ?></h3>
-            </div>
+    <!-- Search Bar -->
+    <input id="searchInput" 
+           type="text" 
+           placeholder="Search products..." 
+           class="border border-gray-300 rounded px-4 py-2 w-full sm:w-1/3 
+                  focus:outline-none focus:ring-2 focus:ring-orange-500">
 
-            <!-- Total Revenue -->
-            <div class="bg-white shadow-sm border-l-4 border-green-500 rounded-lg p-6">
-                <p class="text-gray-600">Total Revenue</p>
-                <h3 class="text-3xl text-blue-900 font-bold">₦<?= number_format($totalRevenue, 2) ?></h3>
-            </div>
+    <!-- Add Button (mobile) -->
+    <a href="add-product.php"
+       class="sm:hidden bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-orange-600">
+        ➕ Add Product
+    </a>
+</div>
 
-            <!-- Pending Orders -->
-            <div class="bg-white shadow-sm border-l-4 border-yellow-500 rounded-lg p-6">
-                <p class="text-gray-600">Pending Orders</p>
-                <h3 class="text-3xl text-blue-900 font-bold"><?= number_format($pendingOrders) ?></h3>
-            </div>
 
-        </div>
 
-        <!-- Recent Users & System Status -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
-            <!-- Recent Users -->
-            <div class="bg-white p-6 rounded-lg shadow-sm">
-                <h2 class="text-xl font-bold text-blue-900 mb-4">Recent Users</h2>
+<!-- PRODUCT TABLE -->
+<div class="max-w-6xl mx-auto px-4">
+    <div class="overflow-x-auto bg-white shadow rounded-lg">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-blue-900 text-white">
+                    <th class="p-3 text-left">Image</th>
+                    <th class="p-3 text-left">Name</th>
+                    <th class="p-3 text-left">Category</th>
+                    <th class="p-3 text-left">Price</th>
+                    <th class="p-3 text-left">Stock</th>
+                    <th class="p-3 text-left">Actions</th>
+                </tr>
+            </thead>
 
-                <?php foreach ($recentUsers as $u): ?>
-                    <div class="flex justify-between py-2 border-b border-gray-200">
-                        <div>
-                            <p class="font-semibold"><?= htmlspecialchars($u['first_name'] . " " . $u['last_name']) ?></p>
-                            <p class="text-xs text-gray-500">New user registered</p>
-                        </div>
-                        <span class="text-xs text-gray-500">ID: <?= $u['id'] ?></span>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-            <!-- System Status -->
-            <div class="bg-white p-6 rounded-lg shadow-sm">
-                <h2 class="text-xl font-bold text-blue-900 mb-4">System Status</h2>
-
-                <div class="space-y-4">
-                    <div class="flex justify-between">
-                        <span>Server Status</span>
-                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">Operational</span>
-                    </div>
-
-                    <div class="flex justify-between">
-                        <span>Database</span>
-                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">Healthy</span>
-                    </div>
-
-                    <div class="flex justify-between">
-                        <span>API Gateway</span>
-                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">Active</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Transactions -->
-        <div class="bg-white p-6 rounded-lg shadow-sm">
-            <h2 class="text-xl font-bold text-blue-900 mb-6">Recent Transactions</h2>
-
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-blue-900 text-white">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-sm">User</th>
-                            <th class="px-4 py-3 text-left text-sm">Amount</th>
-                            <th class="px-4 py-3 text-left text-sm">Type</th>
-                            <th class="px-4 py-3 text-left text-sm">Status</th>
-                            <th class="px-4 py-3 text-left text-sm">Date</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <?php if (empty($recentTransactions)): ?>
-                            <tr><td colspan="5" class="text-center py-6 text-gray-500">No transactions found</td></tr>
+            <tbody id="productTable">
+            <?php foreach ($products as $p): ?>
+                <tr class="border-b hover:bg-gray-50 transition">
+                    <td class="p-3">
+                        <?php if (!empty($p['image'])): ?>
+                        <img src="../uploads/<?= htmlspecialchars($p['image']); ?>" 
+                             class="w-14 h-14 rounded object-cover border" alt="Product Image">
                         <?php else: ?>
-                            <?php foreach ($recentTransactions as $t): ?>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                    <td class="px-4 py-3"><?= htmlspecialchars($t['first_name'] . ' ' . $t['last_name']) ?></td>
-                                    <td class="px-4 py-3 font-semibold">₦<?= number_format($t['amount'], 2) ?></td>
-                                    <td class="px-4 py-3"><?= htmlspecialchars($t['type']) ?></td>
-                                    <td class="px-4 py-3">
-                                        <span class="px-2 py-1 rounded text-xs
-                                            <?= $t['status'] === 'completed' ? 'bg-green-100 text-green-800' : 
-                                               ($t['status'] === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                               'bg-red-100 text-red-800') ?>">
-                                            <?= ucfirst($t['status']) ?>
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3"><?= $t['created_at'] ?></td>
-                                </tr>
-                            <?php endforeach; ?>
+                            <span class="text-gray-400 italic">No Image</span>
                         <?php endif; ?>
-                    </tbody>
+                    </td>
 
-                </table>
-            </div>
-        </div>
+                    <td class="p-3"><?= htmlspecialchars($p['product_name']); ?></td>
+                    <td class="p-3"><?= htmlspecialchars($p['category']); ?></td>
+                    <td class="p-3">₦<?= number_format($p['price']); ?></td>
+                    <td class="p-3"><?= htmlspecialchars($p['stock']); ?></td>
 
+                    <td class="p-3 flex gap-2">
+                        <!-- Edit -->
+                        <a href="edit-product.php?id=<?= $p['id']; ?>" 
+                           class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                            Edit
+                        </a>
+
+                        <!-- Delete -->
+                        <a href="delete-product.php?id=<?= $p['id']; ?>"
+                           onclick="return confirm('Are you sure you want to delete this product?');"
+                           class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+
+        </table>
     </div>
+</div>
+
+
+
+<!-- FLOATING ADD PRODUCT BUTTON (MOBILE ONLY) -->
+<a href="add-product.php"
+   class="md:hidden fixed bottom-5 right-5 bg-orange-600 text-white w-16 h-16 
+          rounded-full flex items-center justify-center shadow-xl text-3xl
+          hover:bg-orange-700 active:scale-95 transition">
+    +
+</a>
+
+
+<!-- SEARCH FILTER SCRIPT -->
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function () {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#productTable tr");
+
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+</script>
 
 </body>
 </html>
