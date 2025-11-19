@@ -1,9 +1,12 @@
 <?php
 session_start();
-require_once "./db/db.php";
-// Correctly detect if user is logged in
-$isLoggedIn = isset($_SESSION['user_id']);
+
+// Check if user is logged in
+$isLoggedIn = isset($_SESSION['user']);
+$userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
+$userRole = $isLoggedIn ? $_SESSION['user']['role'] : '';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
