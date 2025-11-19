@@ -38,8 +38,6 @@ try {
 
     // Get user wallet balance
     $stmt = $pdo->prepare("SELECT balance FROM users WHERE id = ?");
-    // Get user wallet balance, email, and name
-    $stmt = $pdo->prepare("SELECT balance, email, full_name FROM users WHERE id = ?");
     $stmt->execute([$user_id]);
     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -68,29 +66,6 @@ try {
     $stmt->execute([$user_id, $product_id, $price, $quantity, $total_amount]);
 
     $order_id = $pdo->lastInsertId();
-
-    // Send email notification
-    if ($userData && isset($userData['email'])) {
-        $userEmail = $userData['email'];
-        $userName = $userData['full_name'] ?? 'Valued Customer';
-        $productName = $product['product_name'] ?? 'N/A';
-
-        $subject = "Your Order Confirmation from Acctverse (Order #{$order_id})";
-        $message = "
-            <html><body>
-            <h2>Thank you for your order, {$userName}!</h2>
-            <p>Your order has been successfully placed.</p>
-            <h3>Order Details:</h3>
-            <p><strong>Order ID:</strong> {$order_id}</p>
-            <p><strong>Product:</strong> {$productName}</p>
-            <p><strong>Quantity:</strong> {$quantity}</p>
-            <p><strong>Total Amount:</strong> ₦" . number_format($total_amount, 2) . "</p>
-            <p>You can view your order history in your dashboard.</p>
-            <p>Thank you for shopping with Acctverse!</p>
-            </body></html>";
-        $headers = "MIME-Version: 1.0" . "\r\n" . "Content-type:text/html;charset=UTF-8" . "\r\n" . "From: no-reply@acctverse.com" . "\r\n";
-        mail($userEmail, $subject, $message, $headers);
-    }
 
     // Redirect to success page
     header("Location: order-success.php?order_id=" . $order_id);
