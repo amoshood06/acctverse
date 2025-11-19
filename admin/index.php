@@ -84,7 +84,7 @@ try {
                 <a href="index.php" class="text-orange-500 font-medium">Dashboard</a>
                 <a href="admin-users.php" class="text-gray-300 hover:text-orange-500">Users</a>
                 <a href="admin-transactions.php" class="text-gray-300 hover:text-orange-500">Transactions</a>
-                 <a href="manage-product.php" class="text-gray-300 hover:text-orange-500">Add product</a>
+                 <a href="manage-products.php" class="text-gray-300 hover:text-orange-500">Add product</a>
                 <a href="admin-orders.php" class="text-gray-300 hover:text-orange-500">Orders</a>
                 <a href="admin-reports.php" class="text-gray-300 hover:text-orange-500">Reports</a>
                 <a href="admin-settings.php" class="text-gray-300 hover:text-orange-500">Settings</a>

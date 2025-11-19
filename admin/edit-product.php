@@ -3,9 +3,11 @@ session_start();
 require_once "../db/db.php";
 require_once "../flash.php";
 
-// Only admin
-if (!isset($_SESSION['admin'])) {
-    set_flash("error", "Access denied.");
+// ==================================================
+// ADMIN CHECK
+// ==================================================
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+    set_flash("error", "Unauthorized access.");
     header("Location: ../login.php");
     exit;
 }

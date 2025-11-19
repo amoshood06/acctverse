@@ -8,7 +8,7 @@ include 'header.php';
 include 'component/slider.php';
 //end slider
 //product
-include 'component/productmain.php';
+include 'component/product.php';
 //end product
 //footer
 include 'footer.php';   
