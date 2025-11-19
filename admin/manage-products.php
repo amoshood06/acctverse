@@ -3,18 +3,25 @@ session_start();
 require_once "../db/db.php";
 require_once "../flash.php";
 
-// Only admin can view this page
-if (!isset($_SESSION['admin'])) {
-    set_flash("error", "You must log in as admin.");
+// ==================================================
+//  ADMIN AUTH CHECK
+// ==================================================
+
+// Ensure user exists AND is admin
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+    set_flash("error", "Unauthorized access.");
     header("Location: ../login.php");
     exit;
 }
 
+// Current admin info
+$admin = $_SESSION['user'];
+
 // Fetch products
 $stmt = $pdo->query("SELECT * FROM products ORDER BY id DESC");
-$products = $stmt->fetchAll();
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Flash message
+// Flash message (load once)
 $flash = get_flash();
 ?>
 <!DOCTYPE html>
@@ -55,6 +62,7 @@ setTimeout(() => {
 <?php endif; ?>
 
 
+
 <!-- PAGE HEADER -->
 <div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-blue-900">Manage Products</h1>
@@ -76,12 +84,13 @@ setTimeout(() => {
            class="border border-gray-300 rounded px-4 py-2 w-full sm:w-1/3 
                   focus:outline-none focus:ring-2 focus:ring-orange-500">
 
-    <!-- Add Button (desktop + tablet) -->
+    <!-- Add Button (mobile) -->
     <a href="add-product.php"
        class="sm:hidden bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-orange-600">
         ➕ Add Product
     </a>
 </div>
+
 
 
 
@@ -104,22 +113,27 @@ setTimeout(() => {
             <?php foreach ($products as $p): ?>
                 <tr class="border-b hover:bg-gray-50 transition">
                     <td class="p-3">
+                        <?php if (!empty($p['image'])): ?>
                         <img src="../uploads/<?= htmlspecialchars($p['image']); ?>" 
-                             class="w-14 h-14 rounded object-cover border" alt="">
+                             class="w-14 h-14 rounded object-cover border" alt="Product Image">
+                        <?php else: ?>
+                            <span class="text-gray-400 italic">No Image</span>
+                        <?php endif; ?>
                     </td>
+
                     <td class="p-3"><?= htmlspecialchars($p['product_name']); ?></td>
                     <td class="p-3"><?= htmlspecialchars($p['category']); ?></td>
                     <td class="p-3">₦<?= number_format($p['price']); ?></td>
                     <td class="p-3"><?= htmlspecialchars($p['stock']); ?></td>
 
                     <td class="p-3 flex gap-2">
-                        <!-- Edit Button -->
+                        <!-- Edit -->
                         <a href="edit-product.php?id=<?= $p['id']; ?>" 
                            class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
                             Edit
                         </a>
 
-                        <!-- Delete Button -->
+                        <!-- Delete -->
                         <a href="delete-product.php?id=<?= $p['id']; ?>"
                            onclick="return confirm('Are you sure you want to delete this product?');"
                            class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
