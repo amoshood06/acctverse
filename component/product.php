@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php"; // PDO connection
+require_once "./db/db.php"; // PDO connection
 
 // Categories you want to display
 $categories = ['Facebook', 'TikTok', 'Twitter'];
@@ -40,7 +40,7 @@ foreach ($categories as $cat) {
                         <!-- Product Image/Icon -->
 <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
     <?php if (!empty($product['image']) && file_exists("../uploads/" . $product['image'])): ?>
-        <img src="../uploads/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" class="w-full h-full object-cover">
+        <img src="./uploads/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" class="w-full h-full object-cover">
     <?php else: ?>
         <!-- Fallback icon based on category -->
         <?php if ($category === 'Facebook'): ?>
@@ -75,7 +75,7 @@ foreach ($categories as $cat) {
     <div @click.away="open = false" class="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
         <!-- Product Image -->
         <?php if (!empty($product['image'])): ?>
-            <img src="../uploads/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" class="w-full h-48 object-cover rounded mb-4">
+            <img src="./uploads/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" class="w-full h-48 object-cover rounded mb-4">
         <?php endif; ?>
 
         <h2 class="text-xl font-bold mb-2"><?= htmlspecialchars($product['product_name']) ?></h2>
