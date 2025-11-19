@@ -1,9 +1,3 @@
-<?php
-session_start();
-require_once "./db/db.php";
-// Correctly detect if user is logged in
-$isLoggedIn = isset($_SESSION['user_id']);
-?>
 
 <div class="header_one w-full bg-white justify-between flex items-center border-b border-gray-300 pl-[80px] pr-[80px] h-[80px]">
     <!--site-logo-->

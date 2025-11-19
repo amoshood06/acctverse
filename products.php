@@ -1,7 +1,7 @@
 <?php
 //header
 include 'main_header.php';
-include 'header_one.php';
+//include 'header_one.php';
 include 'header.php';
 //end header
 
