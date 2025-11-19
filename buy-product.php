@@ -1,19 +1,17 @@
 <?php
 session_start();
-// Check if user is logged in
-$isLoggedIn = isset($_SESSION['user']);
-$userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
-$userRole = $isLoggedIn ? $_SESSION['user']['role'] : '';
 
 require_once "./db/db.php"; // MySQLi connection ($conn)
 
 // ---- CHECK IF USER IS LOGGED IN ----
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user']['id'])) {
     header("Location: login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user']['id'];
+$userName = $_SESSION['user']['name'];
+$userRole = $_SESSION['user']['role'];
 
 // ---- CHECK PRODUCT ID ----
 if (!isset($_GET['product_id'])) {
@@ -21,7 +19,7 @@ if (!isset($_GET['product_id'])) {
 }
 
 $product_id = (int)$_GET['product_id'];
-$quantity = 1; // default purchase quantity
+$quantity = 1;
 
 // ---- FETCH PRODUCT INFORMATION ----
 $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
@@ -46,20 +44,20 @@ $stmt2->close();
 
 $balance = (float)$userData['balance'];
 
-// ---- CHECK IF BALANCE IS ENOUGH ----
+// ---- CHECK BALANCE ----
 if ($balance < $total_amount) {
     header("Location: fund-wallet.php?error=insufficient_balance");
     exit();
 }
 
-// ---- DEDUCT FROM WALLET ----
+// ---- DEDUCT BALANCE ----
 $newBalance = $balance - $total_amount;
 $stmt3 = $conn->prepare("UPDATE users SET balance = ? WHERE id = ?");
 $stmt3->bind_param("di", $newBalance, $user_id);
 $stmt3->execute();
 $stmt3->close();
 
-// ---- INSERT INTO ORDERS TABLE ----
+// ---- INSERT ORDER ----
 $stmt4 = $conn->prepare("
     INSERT INTO orders (user_id, product_id, price, quantity, total_amount, status, created_at) 
     VALUES (?, ?, ?, ?, ?, 'pending', NOW())
@@ -70,7 +68,7 @@ $stmt4->execute();
 $order_id = $stmt4->insert_id;
 $stmt4->close();
 
-// ---- REDIRECT TO SUCCESS PAGE ----
+// ---- REDIRECT ----
 header("Location: order-success.php?order_id=" . $order_id);
 exit();
 ?>
