@@ -25,7 +25,7 @@ foreach ($categories as $cat) {
             🎁 <?= htmlspecialchars($category) ?>
         </h1>
 
-        <a href="" class="w-full md:w-auto px-4 py-2 border-2 border-green-500 text-green-500 rounded-lg hover:bg-green-50 text-sm font-semibold text-center transition">
+        <a href="all-products.php?category=<?= urlencode($category) ?>" class="w-full md:w-auto px-4 py-2 border-2 border-green-500 text-green-500 rounded-lg hover:bg-green-50 text-sm font-semibold text-center transition">
             View All
         </a>
     </div>
