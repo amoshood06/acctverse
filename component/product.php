@@ -83,34 +83,81 @@ foreach ($categories as $cat) {
                 </div>
 
                 <!-- Modal -->
-                <div x-show="open" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div x-show="open" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 
-                    <div @click.away="open = false" class="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
+    <div @click.away="open = false" 
+         x-data="{ qty: 1, price: <?= $product['price'] ?> }"
+         class="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
 
-                        <?php if (!empty($product['image']) && file_exists($imagePath)): ?>
-                            <img src="<?= $imagePath ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" 
-                                 class="w-full h-48 object-cover rounded mb-4">
-                        <?php endif; ?>
+        <?php if (!empty($product['image']) && file_exists($imagePath)): ?>
+            <img src="<?= $imagePath ?>" 
+                 alt="<?= htmlspecialchars($product['product_name']) ?>" 
+                 class="w-full h-48 object-cover rounded mb-4">
+        <?php endif; ?>
 
-                        <h2 class="text-xl font-bold mb-2"><?= htmlspecialchars($product['product_name']) ?></h2>
-                        <p class="text-gray-700 mb-2"><strong>Category:</strong> <?= htmlspecialchars($product['category']) ?></p>
-                        <p class="text-gray-700 mb-2"><strong>Description:</strong> <?= htmlspecialchars($product['description']) ?></p>
-                        <p class="text-gray-700 mb-2"><strong>Price:</strong> ₦<?= number_format($product['price'], 2) ?></p>
-                        <p class="text-green-600 mb-4"><strong>Stock:</strong> <?= intval($product['stock']) ?></p>
+        <h2 class="text-xl font-bold mb-2"><?= htmlspecialchars($product['product_name']) ?></h2>
 
-                        <form action="buy-product.php" method="POST">
-                            <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                            <button type="submit" 
-                                class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
-                                Buy Now
-                            </button>
-                        </form>
+        <p class="text-gray-700 mb-2"><strong>Category:</strong> <?= htmlspecialchars($product['category']) ?></p>
+        <p class="text-gray-700 mb-2"><strong>Description:</strong> <?= htmlspecialchars($product['description']) ?></p>
 
-                        <button @click="open = false" 
-                            class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-lg">&times;</button>
+        <!-- Price -->
+        <p class="text-gray-700 mb-1">
+            <strong>Price per unit:</strong> ₦<?= number_format($product['price'], 2) ?>
+        </p>
 
-                    </div>
-                </div>
+        <!-- Quantity Selector -->
+        <div class="mt-4 flex items-center gap-4">
+            <strong class="text-gray-700">Quantity:</strong>
+
+            <div class="flex items-center border rounded-lg overflow-hidden">
+
+                <!-- Minus Button -->
+                <button type="button"
+                        @click="if(qty > 1) qty--"
+                        class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-lg font-bold">
+                    −
+                </button>
+
+                <!-- Quantity Display -->
+                <input type="text" 
+                       x-model="qty"
+                       class="w-16 text-center border-l border-r py-2 text-gray-700"
+                       readonly>
+
+                <!-- Plus Button -->
+                <button type="button"
+                        @click="qty++"
+                        class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-lg font-bold">
+                    +
+                </button>
+            </div>
+        </div>
+
+        <!-- Total Price -->
+        <p class="text-green-600 font-semibold mt-3">
+            Total: ₦<span x-text="(qty * price).toLocaleString()"></span>
+        </p>
+
+        <!-- Buy Form -->
+        <form action="buy-product.php" method="POST" class="mt-5">
+            <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+            <input type="hidden" name="quantity" :value="qty">
+
+            <button type="submit" 
+                class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">
+                Buy Now
+            </button>
+        </form>
+
+        <!-- Close Modal -->
+        <button @click="open = false" 
+                class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
+            &times;
+        </button>
+
+    </div>
+</div>
+
 
             </div>
             <?php endforeach; ?>
