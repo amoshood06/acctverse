@@ -67,31 +67,6 @@ try {
 
     $order_id = $pdo->lastInsertId();
 
-    require_once "./email-template.php";
-    
-    $userEmail = $_SESSION['user']['email']; // Assuming email is stored in session
-    $subject = "Order Confirmation - AcctVerse #" . $order_id;
-    $emailBody = getOrderConfirmationEmail(
-        $_SESSION['user']['name'],
-        $product['name'],
-        $quantity,
-        $price,
-        $total_amount,
-        $order_id
-    );
-    
-    // Set email headers
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type: text/html; charset=UTF-8" . "\r\n";
-    $headers .= "From: noreply@acctverse.com" . "\r\n";
-    
-    // Send email
-    if (mail($userEmail, $subject, $emailBody, $headers)) {
-        error_log("Purchase confirmation email sent to: " . $userEmail);
-    } else {
-        error_log("Failed to send purchase confirmation email to: " . $userEmail);
-    }
-
     // Redirect to success page
     header("Location: order-success.php?order_id=" . $order_id);
     exit();
