@@ -44,9 +44,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h1 class="text-xl font-bold text-gray-800">
         <?= htmlspecialchars($category) ?> Products
     </h1>
-    <a href="index.php" class="text-blue-600 hover:underline">← Back</a>
 </div>
-
 <div class="p-4">
 
     <!-- Search & Sorting -->

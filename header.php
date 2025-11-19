@@ -64,7 +64,6 @@ $userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
             <a href="index.php" class="block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Home</a>
             <a href="about-us.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">About</a>
             <a href="./user/order-history" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Orders</a>
-            <a href="./user/product.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Product</a>
             <a href="./user/sms-verification.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SMS Verification</a>
             <a href="" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Add Fund</a>
             <a href="" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Boost Accounts</a>
@@ -134,7 +133,6 @@ $userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
       <a href="index.php">Home</a>
       <a href="about-us.php">About</a>
       <a href="./user/order-history.php">Orders</a>
-      <a href="./user/products.php">Product</a>
       <a href="./user/sms-verification.php">SMS Verification</a>
       <a href="">Add Fund</a>
       <a href="">Boost Accounts</a>
