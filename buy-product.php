@@ -1,5 +1,10 @@
 <?php
 session_start();
+// Check if user is logged in
+$isLoggedIn = isset($_SESSION['user']);
+$userName = $isLoggedIn ? $_SESSION['user']['name'] : '';
+$userRole = $isLoggedIn ? $_SESSION['user']['role'] : '';
+
 require_once "./db/db.php"; // MySQLi connection ($conn)
 
 // ---- CHECK IF USER IS LOGGED IN ----
