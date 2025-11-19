@@ -81,7 +81,7 @@ try {
             </div>
 
             <div class="hidden md:flex items-center gap-8">
-                <a href="./index.php" class="text-orange-500 font-medium">Home</a>
+                <a href="index.php" class="text-orange-500 font-medium">Dashboard</a>
                 <a href="admin-users.php" class="text-gray-300 hover:text-orange-500">Users</a>
                 <a href="admin-transactions.php" class="text-gray-300 hover:text-orange-500">Transactions</a>
                  <a href="manage-products.php" class="text-gray-300 hover:text-orange-500">Add product</a>
