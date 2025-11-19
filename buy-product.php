@@ -36,6 +36,8 @@ try {
     $price = (float)$product['price'];
     $total_amount = $price * $quantity;
 
+    // Get user wallet balance
+    $stmt = $pdo->prepare("SELECT balance FROM users WHERE id = ?");
     // Get user wallet balance, email, and name
     $stmt = $pdo->prepare("SELECT balance, email, full_name FROM users WHERE id = ?");
     $stmt->execute([$user_id]);
