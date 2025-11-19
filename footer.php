@@ -1,5 +1,5 @@
 <!--footer-->
-<div class="footer_container pt-[16px] pb-[16px] pl-[30px] pr-[30px] text-white w-ful bg-red-900 flex justify-between">
+<div class="footer_container pt-[16px] pb-[16px] pl-[30px] pr-[30px] text-white w-ful bg-red-500 flex justify-between">
   <div class="footer_section_one">
    <p>© Copyright 2025 . All rights reserved.</p>
   </div>
