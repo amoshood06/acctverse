@@ -1,0 +1,217 @@
+<?php
+session_start();
+require_once "../db/db.php";
+require_once "../flash.php";
+
+// Admin authentication check
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+    set_flash("error", "Unauthorized access. Please login as admin.");
+    header("Location: ../login.php");
+    exit;
+}
+
+$flash = get_flash();
+
+// ==================================================
+//  Fetch Statistics
+// ==================================================
+try {
+    $totalOrders = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
+    $pendingOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'pending'")->fetchColumn();
+    $completedOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'completed'")->fetchColumn();
+    $cancelledOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'cancelled'")->fetchColumn();
+} catch (Exception $e) {
+    $totalOrders = $pendingOrders = $completedOrders = $cancelledOrders = 0;
+    set_flash("error", "Could not load order statistics.");
+}
+
+// ==================================================
+//  Fetch and Filter Orders
+// ==================================================
+$sql = "
+    SELECT 
+        o.id, o.total_amount, o.status, o.created_at, o.admin_note,
+        p.product_name,
+        u.first_name, u.last_name
+    FROM orders o
+    JOIN users u ON o.user_id = u.id
+    JOIN products p ON o.product_id = p.id
+";
+
+$params = [];
+$whereClauses = [];
+
+// Filter by Order ID
+$order_id = trim($_GET['order_id'] ?? '');
+if ($order_id) {
+    $whereClauses[] = "o.id = ?";
+    $params[] = $order_id;
+}
+
+// Filter by Status
+$status_filter = trim($_GET['status'] ?? '');
+if ($status_filter) {
+    $whereClauses[] = "o.status = ?";
+    $params[] = $status_filter;
+}
+
+// Filter by Date
+$date_filter = trim($_GET['date'] ?? '');
+if ($date_filter) {
+    $whereClauses[] = "DATE(o.created_at) = ?";
+    $params[] = $date_filter;
+}
+
+if (!empty($whereClauses)) {
+    $sql .= " WHERE " . implode(" AND ", $whereClauses);
+}
+
+$sql .= " ORDER BY o.created_at DESC";
+
+try {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $orders = [];
+    set_flash("error", "Could not retrieve orders.");
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management - AcctGlobe Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-blue-900 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <img src="../assets/image/acctverse.png" alt="Acctverse" class="w-32">
+                </div>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="index.php" class="text-gray-300 hover:text-orange-500">Dashboard</a>
+                    <a href="admin-users.php" class="text-gray-300 hover:text-orange-500">Users</a>
+                    <a href="manage-products.php" class="text-gray-300 hover:text-orange-500">Products</a>
+                    <a href="admin-orders.php" class="text-orange-500 font-medium">Orders</a>
+                </div>
+                <a href="../logout.php" class="bg-orange-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-blue-900 mb-8">Product Order Management</h1>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
+                <p class="text-gray-600 text-sm">Total Orders</p>
+                <h3 class="text-2xl font-bold text-blue-900"><?= number_format($totalOrders) ?></h3>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-orange-500">
+                <p class="text-gray-600 text-sm">Pending Orders</p>
+                <h3 class="text-2xl font-bold text-blue-900"><?= number_format($pendingOrders) ?></h3>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-green-500">
+                <p class="text-gray-600 text-sm">Completed</p>
+                <h3 class="text-2xl font-bold text-blue-900"><?= number_format($completedOrders) ?></h3>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-red-500">
+                <p class="text-gray-600 text-sm">Cancelled</p>
+                <h3 class="text-2xl font-bold text-blue-900"><?= number_format($cancelledOrders) ?></h3>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <form method="GET" action="admin-orders.php">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" name="order_id" placeholder="Order ID..." value="<?= htmlspecialchars($order_id) ?>" class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-orange-500">
+                    <select name="status" class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-orange-500">
+                        <option value="">All Status</option>
+                        <option value="pending" <?= $status_filter === 'pending' ? 'selected' : '' ?>>Pending</option>
+                        <option value="completed" <?= $status_filter === 'completed' ? 'selected' : '' ?>>Completed</option>
+                        <option value="cancelled" <?= $status_filter === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                    </select>
+                    <input type="date" name="date" value="<?= htmlspecialchars($date_filter) ?>" class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-orange-500">
+                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">Search</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-blue-900 text-white">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Order ID</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">User</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Product</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Amount</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Date</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Note for User</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($orders)): ?>
+                            <tr>
+                                <td colspan="8" class="text-center py-10 text-gray-500">No orders found.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($orders as $order): ?>
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <form action="update-order-status.php" method="POST">
+                                        <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+                                        <td class="px-4 py-3 font-mono">#<?= htmlspecialchars($order['id']) ?></td>
+                                        <td class="px-4 py-3"><?= htmlspecialchars($order['first_name'] . ' ' . $order['last_name']) ?></td>
+                                        <td class="px-4 py-3"><?= htmlspecialchars($order['product_name']) ?></td>
+                                        <td class="px-4 py-3 font-semibold">₦<?= number_format($order['total_amount'], 2) ?></td>
+                                        <td class="px-4 py-3 text-gray-500"><?= date("M d, Y", strtotime($order['created_at'])) ?></td>
+                                        <td class="px-4 py-3">
+                                            <select name="status" class="text-xs border border-gray-300 rounded p-1">
+                                                <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
+                                                <option value="completed" <?= $order['status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
+                                                <option value="cancelled" <?= $order['status'] === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                                            </select>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <input type="text" name="admin_note" placeholder="Add a note..." value="<?= htmlspecialchars($order['admin_note'] ?? '') ?>" class="w-full border-gray-200 rounded p-1 text-xs focus:outline-none focus:border-orange-400">
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">Update</button>
+                                        </td>
+                                    </form>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <?php if ($flash): ?>
+    <script>
+    Toastify({
+        text: <?= json_encode($flash['message']); ?>,
+        duration: 4000,
+        gravity: "top",
+        position: "right",
+        close: true,
+        backgroundColor: <?= json_encode($flash['type']==='success' ? "linear-gradient(to right, #00b09b, #96c93d)" : "linear-gradient(to right, #ff5f6d, #ffc371)") ?>
+    }).showToast();
+    </script>
+    <?php endif; ?>
+</body>
+</html>
