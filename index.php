@@ -1,16 +1,11 @@
-<?php
-//header
-include 'main_header.php';
-//include 'header_one.php';
-include 'header.php';
-//end header
-//slider
-include 'component/slider.php';
-//end slider
-//product
-include 'component/product.php';
-//end product
-//footer
-include 'footer.php';   
-//end footer
-?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>hi</h1>
+</body>
+</html>
