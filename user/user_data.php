@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <nav class="bg-white shadow-sm sticky top-0 z-10">
   <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-    <span class="font-bold text-lg">AcctGlobe</span>
+    <img src="assets/image/acctverse.png" alt="Acctverse" class="w-[150px]">
     <a href="index.php" class="text-red-500 font-medium">← Back to Dashboard</a>
   </div>
 </nav>

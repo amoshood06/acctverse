@@ -1,7 +1,21 @@
 
+<?php
+// Fetch the site logo from settings
+$logo_path = 'assets/image/acctverse.png'; // Default logo
+try {
+    $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_name = 'site_logo'");
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result && !empty($result['setting_value'])) {
+        $logo_path = 'assets/image/' . htmlspecialchars($result['setting_value']);
+    }
+} catch (Exception $e) {
+    // On error, the default logo will be used. You could log the error here.
+}
+?>
 <div class="header_one w-full bg-white justify-between flex items-center border-b border-gray-300 pl-[80px] pr-[80px] h-[80px]">
     <!--site-logo-->
-    <img src="assets/image/acctverse.png" alt="" class="w-[150px]">
+    <img src="<?= $logo_path ?>" alt="Site Logo" class="w-[150px]">
     <!-- Search Bar (hidden on mobile, visible on desktop) -->
     <div class="hidden md:flex items-center w-full max-w-md rounded-full border border-gray-300 overflow-hidden">
       <input 
@@ -52,23 +66,24 @@
       <div id="mobileNav" class="mobile-nav hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50" style="z-index:9999;">
         <div class="py-2 px-3">
           <div class="mt-2 pt-2">
-            <a href="index.php" class="block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Home</a>
-            <a href="about-us.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">About</a>
-            <a href="./user/order-history" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Orders</a>
-            <a href="./user/sms-verification.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SMS Verification</a>
-            <a href="" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Add Fund</a>
-            <a href="" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Boost Accounts</a>
+            <a href="index" class="block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Home</a>
+            <a href="about-us" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">About</a>
+            <a href="<?php echo $isLoggedIn ? './user/order-history' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Orders</a>
+            <a href="<?php echo $isLoggedIn ? './user/product' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Product</a>
+            <a href="<?php echo $isLoggedIn ? './user/sms-verification' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SMS Verification</a>
+            <a href="<?php echo $isLoggedIn ? '' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Add Fund</a>
+            <a href="coming-soon" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Boost Accounts</a>
             <a href="" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Contact</a>
           </div>
           <!-- auth buttons -->
           <div class="mb-2 border-t border-gray-100">
             <?php if(!$isLoggedIn): ?>
-            <a href="login.php" class="block w-full text-center px-3 py-2 mb-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold">Login</a>
-            <a href="register.php" class="block w-full text-center px-3 py-2 bg-orange-500 hover:bg-green-600 text-white rounded font-semibold">Register</a>
+            <a href="login" class="block w-full text-center px-3 py-2 mb-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold">Login</a>
+            <a href="register" class="block w-full text-center px-3 py-2 bg-orange-500 hover:bg-green-600 text-white rounded font-semibold">Register</a>
             <?php else: ?>
-            <a href="./user/index.php" class="block w-full text-center px-3 py-2 mb-2 bg-blue-500 hover:bg-blue-600 text-white rounded font-semibold">Dashboard</a>
-            <a href="./user/profile.php" class="block w-full text-center px-3 py-2 mb-2 bg-purple-500 hover:bg-purple-600 text-white rounded font-semibold">Profile</a>
-            <a href="logout.php" class="block w-full text-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold">Logout</a>
+            <a href="./user/index" class="block w-full text-center px-3 py-2 mb-2 bg-blue-500 hover:bg-blue-600 text-white rounded font-semibold">Dashboard</a>
+            <a href="./user/profile" class="block w-full text-center px-3 py-2 mb-2 bg-purple-500 hover:bg-purple-600 text-white rounded font-semibold">Profile</a>
+            <a href="logout" class="block w-full text-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold">Logout</a>
             <?php endif; ?>
           </div>
         </div>
@@ -87,18 +102,18 @@
 
     <!-- Category dropdown -->
     <ul id="categoryMenu" class="dropdown--menu hidden absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5" style="z-index:9999;">
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=FACEBOOK" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK</a></li>
 
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">INSTAGRAM</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=INSTAGRAM" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">INSTAGRAM</a></li>
       
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TIKTOK</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SNAPCHAT</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">RADDIT</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">LINKEDIN</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ENTERTAINMENT</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TEXTING APPS</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">VPN/PROXY</a></li>
-      <li class="dropdown--menu__item"><a href="#" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ACCTVERSE GIVEAWAY...</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=TIKTOK" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TIKTOK</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=SNAPCHAT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SNAPCHAT</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=RADDIT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">RADDIT</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=LINKEDIN" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">LINKEDIN</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=ENTERTAINMENT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ENTERTAINMENT</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=TEXTING%20APPS" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TEXTING APPS</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=VPN/PROXY" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">VPN/PROXY</a></li>
+      <li class="dropdown--menu__item"><a href="product.php?category=ACCTVERSE%20GIVEAWAY" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ACCTVERSE GIVEAWAY...</a></li>
     </ul>
   </div>
 
@@ -121,12 +136,13 @@
 
   <!-- main Menu-->
     <div class="hidden md:flex text-[#001957] gap-[20px] font-bold justify-center items-center py-4 nav_menu">
-      <a href="index.php">Home</a>
-      <a href="about-us.php">About</a>
-      <a href="./user/order-history.php">Orders</a>
-      <a href="./user/sms-verification.php">SMS Verification</a>
+      <a href="index">Home</a>
+      <a href="about-us">About</a>
+      <a href="./user/order-history">Orders</a>
+       <a href="./user/product">Product</a>
+      <a href="./user/sms-verification">SMS Verification</a>
       <a href="">Add Fund</a>
-      <a href="">Boost Accounts</a>
+      <a href="coming-sson">Boost Accounts</a>
       <a href="">Contact</a>
     </div>
 </header>

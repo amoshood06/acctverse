@@ -34,7 +34,7 @@ $orders = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMS Verification - AcctGlobe</title>
+    <title>SMS Verification - Acctverse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -43,7 +43,7 @@ $orders = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Navigation -->
     <nav class="bg-white shadow-sm sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <span class="font-bold text-lg">AcctGlobe</span>
+            <img src="assets/image/acctverse.png" alt="Acctverse" class="w-[150px]">
             <a href="index.php" class="text-orange-500 font-medium">← Back to Dashboard</a>
         </div>
     </nav>

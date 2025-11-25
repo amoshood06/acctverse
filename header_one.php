@@ -39,12 +39,13 @@ $isLoggedIn = isset($_SESSION['user_id']) || isset($_COOKIE['user_token']);
       <div id="mobileNav" class="mobile-nav hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50" style="z-index:9999;">
         <div class="py-2 px-3">
           <div class="mt-2 pt-2">
-            <a href="index.php" class="block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Home</a>
-            <a href="about-us.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">About</a>
-            <a href="./user/order-history.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Orders</a>
-            <a href="./user/sms-verification.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SMS Verification</a>
+            <a href="index" class="block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Home</a>
+            <a href="about-us" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">About</a>
+            <a href="./user/order-history" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Orders</a>
+            <a href="./user/product" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Product</a>
+            <a href="./user/sms-verification" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SMS Verification</a>
             <a href="#" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Add Fund</a>
-            <a href="#" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Boost Accounts</a>
+            <a href="coming-soon" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Boost Accounts</a>
             <a href="#" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Contact</a>
           </div>
           <!-- Auth buttons for mobile -->

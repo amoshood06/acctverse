@@ -101,7 +101,12 @@ try {
                                             <?= ucfirst(htmlspecialchars($order['status'])); ?>
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-gray-800"><?= htmlspecialchars($order['product_name']); ?></td>
+                                    <td class="px-4 py-3 text-sm text-gray-800">
+                                        <?= htmlspecialchars($order['product_name']); ?>
+                                        <?php if (!empty($order['admin_note'])): ?>
+                                            <button onclick="alert('Admin Note: \n\n<?= htmlspecialchars(addslashes($order['admin_note'])) ?>')" class="ml-2 bg-blue-100 text-blue-700 px-2 py-1 text-xs rounded hover:bg-blue-200">View Note</button>
+                                        <?php endif; ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>

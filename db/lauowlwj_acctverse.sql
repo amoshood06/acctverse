@@ -24,6 +24,137 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `cookie_policy`
+--
+
+CREATE TABLE `cookie_policy` (
+  `id` int NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faqs`
+--
+
+CREATE TABLE `faqs` (
+  `id` int NOT NULL,
+  `question` text NOT NULL,
+  `answer` text NOT NULL,
+  `category` varchar(100) DEFAULT 'General',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `help_articles`
+--
+
+CREATE TABLE `help_articles` (
+  `id` int NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `category` varchar(100) DEFAULT 'General',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `privacy_policy`
+--
+
+CREATE TABLE `privacy_policy` (
+  `id` int NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `terms_and_conditions`
+--
+
+CREATE TABLE `terms_and_conditions` (
+  `id` int NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `site_settings`
+--
+
+CREATE TABLE `site_settings` (
+  `id` int NOT NULL,
+  `setting_name` varchar(255) NOT NULL,
+  `setting_value` text,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `site_settings`
+--
+
+INSERT INTO `site_settings` (`id`, `setting_name`, `setting_value`) VALUES(1, 'site_logo', 'acctverse.png');
+
+--
+-- Table structure for tsile `abte_settings`
+--
+
+CREATE TABLE `site_settings` (
+  `id` int NOT NULL,
+  `setting_name` varchar(255) NOT NULL,
+  `setting_value` text,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `site_settings`
+--
+
+INSERT INTO `site_settings` (`id`, `setting_name`, `setting_value`) VALUES(1, 'site_logo', 'acctverse.png');
+
+--
+-- Table structure for table `about_us`
+--
+
+CREATE TABLE `about_us` (
+  `id` int NOT NULL,
+  `main_heading` text,
+  `main_paragraph` text,
+  `feature_1` varchar(255) DEFAULT NULL,
+  `feature_2` varchar(255) DEFAULT NULL,
+  `feature_3` varchar(255) DEFAULT NULL,
+  `feature_4` varchar(255) DEFAULT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `stat_1_value` varchar(50) DEFAULT NULL,
+  `stat_1_label` varchar(100) DEFAULT NULL,
+  `stat_2_value` varchar(50) DEFAULT NULL,
+  `stat_2_label` varchar(100) DEFAULT NULL,
+  `stat_3_value` varchar(50) DEFAULT NULL,
+  `stat_3_label` varchar(100) DEFAULT NULL,
+  `stat_4_value` varchar(50) DEFAULT NULL,
+  `stat_4_label` varchar(100) DEFAULT NULL,
+  `sub_heading` text,
+  `sub_paragraph` text,
+  `cta_heading` text,
+  `cta_paragraph` text,
+  `cta_button_text` varchar(100) DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `orders`
 --
 
@@ -35,7 +166,8 @@ CREATE TABLE `orders` (
   `quantity` int UNSIGNED NOT NULL DEFAULT '1',
   `total_amount` decimal(12,2) NOT NULL,
   `status` enum('pending','completed','cancelled') NOT NULL DEFAULT 'pending',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `admin_note` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -160,6 +292,40 @@ CREATE TABLE `tickets` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `transactions`
+--
+
+CREATE TABLE `transactions` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `status` enum('pending','completed','failed','cancelled') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `withdrawals`
+--
+
+CREATE TABLE `withdrawals` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `amount` decimal(12,2) NOT NULL,
+  `bank_name` varchar(255) NOT NULL,
+  `account_number` varchar(20) NOT NULL,
+  `account_name` varchar(255) NOT NULL,
+  `status` enum('pending','processing','completed','rejected') NOT NULL DEFAULT 'pending',
+  `admin_note` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
 -- Table structure for table `users`
 --
 
@@ -205,6 +371,42 @@ INSERT INTO `users` (`id`, `full_name`, `email`, `password_hash`, `role`, `is_ve
 --
 
 --
+-- Indexes for table `about_us`
+--
+ALTER TABLE `about_us`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `cookie_policy`
+--
+ALTER TABLE `cookie_policy`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `faqs`
+--
+ALTER TABLE `faqs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `help_articles`
+--
+ALTER TABLE `help_articles`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `privacy_policy`
+--
+ALTER TABLE `privacy_policy`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `terms_and_conditions`
+--
+ALTER TABLE `terms_and_conditions`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
@@ -246,6 +448,13 @@ ALTER TABLE `tickets`
   ADD KEY `tickets_ibfk_1` (`user_id`);
 
 --
+-- Indexes for table `transactions`
+--
+ALTER TABLE `transactions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `transactions_user_id_foreign` (`user_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -253,8 +462,63 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `withdrawals`
+--
+ALTER TABLE `withdrawals`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `withdrawals_user_id_foreign` (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `about_us`
+--
+ALTER TABLE `about_us`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cookie_policy`
+--
+ALTER TABLE `cookie_policy`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `faqs`
+--
+ALTER TABLE `faqs`
+  MODIFY `id` int NOT NULL AUTons`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT fOr table `site_settings`
+--
+ALTER TABLE `site_setti_gINCREMENT;
+ AUTO_INCREMENT,=2
+--
+-- AUTO_INCREMENT for table `help_articles`
+--
+ALTER TABLE `help_articles`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `privacy_policy`
+--
+ALTER TABLE `privacy_policy`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `terms_and_conditions`
+--
+ALTER TABLE `terms_and_conditions`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `site_settings`
+--
+ALTER TABLE `site_settings`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -293,6 +557,18 @@ ALTER TABLE `tickets`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `transactions`
+--
+ALTER TABLE `transactions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `withdrawals`
+--
+ALTER TABLE `withdrawals`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
@@ -314,6 +590,18 @@ ALTER TABLE `referrals`
 --
 ALTER TABLE `tickets`
   ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `transactions`
+--
+ALTER TABLE `transactions`
+  ADD CONSTRAINT `transactions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `withdrawals`
+--
+ALTER TABLE `withdrawals`
+  ADD CONSTRAINT `withdrawals_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

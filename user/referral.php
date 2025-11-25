@@ -3,6 +3,59 @@ session_start();
 require_once "../db/db.php";  // Ensure $pdo is initialized
 require_once "../flash.php";
 
+// A list of Nigerian banks for the withdrawal form.
+$banks = [
+    "Access Bank", "Citibank", "Ecobank", "Fidelity Bank", "First Bank", "FCMB",
+    "GTBank", "Heritage Bank", "Keystone Bank", "Kuda Bank", "Opay", "Palmpay",
+    "Polaris Bank", "Stanbic IBTC Bank", "Standard Chartered Bank", "Sterling Bank",
+    "Suntrust Bank", "Union Bank", "UBA", "Unity Bank", "Wema Bank", "Zenith Bank"
+];
+sort($banks);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
+    $amount = filter_input(INPUT_POST, 'amount', FILTER_VALIDATE_FLOAT);
+    $bankName = filter_input(INPUT_POST, 'bank_name', FILTER_SANITIZE_STRING);
+    $accountNumber = filter_input(INPUT_POST, 'account_number', FILTER_SANITIZE_STRING);
+    $accountName = filter_input(INPUT_POST, 'account_name', FILTER_SANITIZE_STRING);
+    $userId = $_SESSION['user']['id'];
+
+    // Basic validation
+    if ($amount && $bankName && $accountNumber && $accountName && $amount > 0) {
+        try {
+            $pdo->beginTransaction();
+
+            // Check if user has enough referral earnings
+            $stmt = $pdo->prepare("SELECT referral_earnings FROM users WHERE id = ? FOR UPDATE");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && $user['referral_earnings'] >= $amount) {
+                // Move amount from referral_earnings to pending_earnings
+                $newReferralEarnings = $user['referral_earnings'] - $amount;
+                $updateStmt = $pdo->prepare("UPDATE users SET referral_earnings = ?, pending_earnings = pending_earnings + ? WHERE id = ?");
+                $updateStmt->execute([$newReferralEarnings, $amount, $userId]);
+
+                // Create withdrawal record
+                $insertStmt = $pdo->prepare("INSERT INTO withdrawals (user_id, amount, bank_name, account_number, account_name) VALUES (?, ?, ?, ?, ?)");
+                $insertStmt->execute([$userId, $amount, $bankName, $accountNumber, $accountName]);
+
+                $pdo->commit();
+                set_flash("success", "Withdrawal request submitted successfully!");
+            } else {
+                $pdo->rollBack();
+                set_flash("error", "Insufficient referral balance.");
+            }
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            set_flash("error", "An error occurred: " . $e->getMessage());
+        }
+    } else {
+        set_flash("error", "Please fill all fields correctly.");
+    }
+    header("Location: referral.php");
+    exit;
+}
+
 // Redirect if user is not logged in
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
@@ -46,9 +99,20 @@ try {
     $stmtRef->execute([$user['id']]);
     $latestReferrals = $stmtRef->fetchAll(PDO::FETCH_ASSOC);
 
+    // Fetch withdrawal history
+    $stmtWithdrawals = $pdo->prepare("
+        SELECT amount, status, created_at, admin_note 
+        FROM withdrawals 
+        WHERE user_id = ? 
+        ORDER BY created_at DESC
+        LIMIT 10
+    ");
+    $stmtWithdrawals->execute([$user['id']]);
+    $withdrawalHistory = $stmtWithdrawals->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     $referralBalance = $pendingAmount = $withdrawnAmount = "0.00";
     $latestReferrals = [];
+    $withdrawalHistory = [];
 }
 ?>
 
@@ -59,6 +123,11 @@ try {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Referral & Earnings - Acctverse</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+    .status-pending { background-color: #fef9c3; color: #ca8a04; }
+    .status-completed { background-color: #dcfce7; color: #16a34a; }
+    .status-rejected { background-color: #fee2e2; color: #dc2626; }
+</style>
 </head>
 <body class="bg-gray-50">
 <!-- Navigation -->
@@ -71,6 +140,12 @@ try {
 
 <!-- Main Content -->
 <div class="max-w-4xl mx-auto px-4 py-8">
+
+    <?php if ($flash): ?>
+        <div class="mb-4 p-4 rounded-md <?php echo $flash['type'] === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+            <?php echo $flash['message']; ?>
+        </div>
+    <?php endif; ?>
 
     <!-- Earnings Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -118,8 +193,65 @@ try {
 
         <h3 class="text-lg font-bold text-blue-900 mb-6">Referral Link</h3>
         <div class="flex gap-2">
-            <input type="text" value="https://acctglobe.com/register?ref=<?php echo $user['referral_code']; ?>" class="flex-1 px-4 py-2 border border-gray-300 rounded bg-gray-50 text-sm" readonly>
-            <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" onclick="navigator.clipboard.writeText('https://acctglobe.com/register?ref=<?php echo $user['referral_code']; ?>')">📋</button>
+            <input type="text" value="https://acctverse.com/register?ref=<?php echo $user['referral_code']; ?>" class="flex-1 px-4 py-2 border border-gray-300 rounded bg-gray-50 text-sm" readonly>
+            <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" onclick="navigator.clipboard.writeText('https://acctverse.com/register?ref=<?php echo $user['referral_code']; ?>')">📋</button>
+        </div>
+    </div>
+
+    <!-- Withdrawal Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <!-- Withdrawal Form -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-bold text-blue-900 mb-6">Request Withdrawal</h3>
+            <form action="referral.php" method="POST">
+                <div class="mb-4">
+                    <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Amount (₦)</label>
+                    <input type="number" name="amount" id="amount" step="0.01" min="1" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-1">Bank</label>
+                    <select name="bank_name" id="bank_name" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500" required>
+                        <option value="">-- Select Bank --</option>
+                        <?php foreach ($banks as $bank): ?>
+                            <option value="<?php echo htmlspecialchars($bank); ?>"><?php echo htmlspecialchars($bank); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="account_number" class="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
+                    <input type="text" name="account_number" id="account_number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500" required>
+                </div>
+                <div class="mb-6">
+                    <label for="account_name" class="block text-sm font-medium text-gray-700 mb-1">Account Name</label>
+                    <input type="text" name="account_name" id="account_name" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500" required>
+                </div>
+                <button type="submit" name="withdraw" class="w-full bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 font-medium">Submit Request</button>
+            </form>
+        </div>
+
+        <!-- Withdrawal History -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-bold text-blue-900 mb-6">Withdrawal History</h3>
+            <div class="overflow-y-auto h-96">
+                <?php if(count($withdrawalHistory) > 0): ?>
+                    <?php foreach($withdrawalHistory as $withdrawal): ?>
+                        <div class="border-b border-gray-200 pb-3 mb-3">
+                            <div class="flex justify-between items-center">
+                                <p class="font-bold text-gray-800">₦<?php echo number_format($withdrawal['amount'], 2); ?></p>
+                                <span class="text-xs font-medium px-2 py-1 rounded-full status-<?php echo strtolower(htmlspecialchars($withdrawal['status'])); ?>">
+                                    <?php echo htmlspecialchars(ucfirst($withdrawal['status'])); ?>
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500"><?php echo date("d M, Y, g:i a", strtotime($withdrawal['created_at'])); ?></p>
+                            <?php if (!empty($withdrawal['admin_note'])): ?>
+                                <p class="text-xs text-red-600 mt-1">Note: <?php echo htmlspecialchars($withdrawal['admin_note']); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-center text-gray-500 pt-16">No withdrawal requests yet.</p>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
