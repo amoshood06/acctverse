@@ -1,9 +1,13 @@
 <?php
 // Database connection settings
+// $host = "localhost";
+// $dbname = "lauowlwj_acctverse";
+// $username = "lauowlwj_acctverse";
+// $password = "acctverse123";
 $host = "localhost";
-$dbname = "lauowlwj_acctverse";
-$username = "lauowlwj_acctverse";
-$password = "acctverse123";
+$dbname = "9tech";
+$username = "root";
+$password = "";
 
 try {
     // Create PDO instance

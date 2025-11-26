@@ -1,5 +1,4 @@
 <?php 
-session_start();
 require_once "../db/db.php";  // Ensure $pdo is initialized
 require_once "../flash.php";
 

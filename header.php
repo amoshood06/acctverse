@@ -1,5 +1,6 @@
 
 <?php
+include './db/db.php';
 // Fetch the site logo from settings
 $logo_path = 'assets/image/acctverse.png'; // Default logo
 try {

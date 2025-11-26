@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once "../db/db.php";
 require_once "../flash.php";
 
@@ -10,6 +9,21 @@ if (!isset($_SESSION['user'])) {
 }
 
 $user_id = $_SESSION['user']['id'];
+
+// Pagination settings
+$items_per_page = 10; // Number of orders to display per page
+$current_page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+if (!$current_page || $current_page < 1) {
+    $current_page = 1;
+}
+$offset = ($current_page - 1) * $items_per_page;
+
+// Get total number of orders for pagination
+$total_orders_stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE user_id = ?");
+$total_orders_stmt->execute([$user_id]);
+$total_orders = $total_orders_stmt->fetchColumn();
+$total_pages = ceil($total_orders / $items_per_page);
+
 
 // Fetch order history for the logged-in user
 try {
@@ -25,9 +39,13 @@ try {
         FROM orders o
         JOIN products p ON o.product_id = p.id
         WHERE o.user_id = ?
-        ORDER BY o.created_at DESC
+        ORDER BY o.created_at DESC 
+        LIMIT ? OFFSET ?
     ");
-    $stmt->execute([$user_id]);
+    $stmt->bindValue(1, $user_id, PDO::PARAM_INT);
+    $stmt->bindValue(2, $items_per_page, PDO::PARAM_INT);
+    $stmt->bindValue(3, $offset, PDO::PARAM_INT);
+    $stmt->execute();
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     $orders = [];
@@ -114,6 +132,30 @@ try {
                 </table>
             </div>
         </div>
+
+        <!-- Pagination Controls -->
+        <?php if ($total_pages > 1): ?>
+            <div class="flex justify-center items-center space-x-2 mt-8">
+                <?php if ($current_page > 1): ?>
+                    <a href="?page=<?= $current_page - 1 ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Previous</a>
+                <?php else: ?>
+                    <span class="px-4 py-2 bg-gray-100 text-gray-400 rounded cursor-not-allowed">Previous</span>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="?page=<?= $i ?>" class="px-4 py-2 rounded <?= ($i == $current_page) ? 'bg-blue-900 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($current_page < $total_pages): ?>
+                    <a href="?page=<?= $current_page + 1 ?>" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Next</a>
+                <?php else: ?>
+                    <span class="px-4 py-2 bg-gray-100 text-gray-400 rounded cursor-not-allowed">Next</span>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
     </div>
 </body>
 </html>

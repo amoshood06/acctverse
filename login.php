@@ -1,7 +1,6 @@
 <?php 
 require_once './db/db.php';
 require_once 'flash.php';
-session_start();
 
 // Handle Login Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
