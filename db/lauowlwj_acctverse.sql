@@ -23,6 +23,9 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
+ALTER TABLE `users` ADD `referral_code` VARCHAR(255) NULL AFTER `verify_token`;
+ALTER TABLE `users` ADD `referred_by` INT(11) NULL AFTER `referral_code`;
+
 --
 -- Table structure for table `cookie_policy`
 --
