@@ -1,13 +1,20 @@
+<?php
+require_once __DIR__ . '/../db/db.php'; // Assumes db.php is in the root db folder
+
+// Fetch slider images from the database
+$stmt = $pdo->query("SELECT image_path, alt_text FROM sliders ORDER BY created_at DESC");
+$slides_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <div class="slider-container relative w-full">
 	<div class="slider-viewport sliders  overflow-hidden m-[50px]">
 		<div class="slider-track flex">
-			<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_1.png" alt="" class="w-full object-cover"/></div>
-					<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_2.png" alt="" class="w-full object-cover"/></div>
-					<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_3.png" alt="" class="w-full object-cover"/></div>
-					<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_4.png" alt="" class="w-full object-cover"/></div>
-					<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_5.png" alt="" class="w-full object-cover"/></div>
-					<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_6.png" alt="" class="w-full object-cover"/></div>
-					<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_7.png" alt="" class="w-full object-cover"/></div>
+			<?php if (!empty($slides_data)): ?>
+				<?php foreach ($slides_data as $slide): ?>
+					<div class="slide flex-shrink-0 w-full"><img src="<?= htmlspecialchars(ltrim(str_replace(dirname(__DIR__), '', $slide['image_path']), '/\\')) ?>" alt="<?= htmlspecialchars($slide['alt_text']) ?>" class="w-full object-cover"/></div>
+				<?php endforeach; ?>
+			<?php else: ?>
+				<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_1.png" alt="Default slider image" class="w-full object-cover"/></div>
+			<?php endif; ?>
 		</div>
 	</div>
 
