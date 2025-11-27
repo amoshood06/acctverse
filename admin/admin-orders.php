@@ -100,6 +100,7 @@ try {
                     <a href="admin-users.php" class="text-gray-300 hover:text-orange-500">Users</a>
                     <a href="manage-products.php" class="text-gray-300 hover:text-orange-500">Products</a>
                     <a href="admin-orders.php" class="text-orange-500 font-medium">Orders</a>
+                    <a href="admin-transactions.php" class="text-gray-300 hover:text-orange-500">Transactions</a>
                 </div>
                 <a href="../logout.php" class="bg-orange-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">Logout</a>
             </div>

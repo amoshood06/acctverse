@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_withdrawal']))
                     $userUpdateStmt->execute([$amount, $amount, $userId]);
                 } elseif ($status === 'rejected') {
                     // Return amount from pending to referral earnings
-                    $userUpdateStmt = $pdo->prepare("UPDATE users SET pending_earnings = pending_earnings - ?, referral_earnings = referral_earnings + ? WHERE id = ?");
+                    $userUpdateStmt = $pdo->prepare("UPDATE users SET pending_earnings = pending_earnings - ?, earnings = earnings + ? WHERE id = ?");
                     $userUpdateStmt->execute([$amount, $amount, $userId]);
                 }
             }

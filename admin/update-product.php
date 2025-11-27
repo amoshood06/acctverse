@@ -3,7 +3,7 @@ session_start();
 require_once "../db/db.php";
 require_once "../flash.php";
 
-if (!isset($_SESSION['admin'])) {
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     set_flash("error", "Unauthorized.");
     header("Location: ../login.php");
     exit;

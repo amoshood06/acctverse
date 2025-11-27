@@ -80,28 +80,28 @@ try {
                 <span class="text-white font-bold text-lg">AcctGlobe Admin</span>
             </div>
 
-            <div class="hidden md:flex items-center gap-8">
             <!-- Desktop Nav -->
-            <div class="hidden md:flex items-center gap-6">
+            <div class="hidden md:flex items-center gap-8">
                 <a href="index.php" class="text-orange-500 font-medium">Dashboard</a>
                 <a href="admin-users.php" class="text-gray-300 hover:text-orange-500">Users</a>
                 <a href="admin-transactions.php" class="text-gray-300 hover:text-orange-500">Transactions</a>
-                 <a href="manage-products.php" class="text-gray-300 hover:text-orange-500">Add product</a>
+                <a href="manage-products.php" class="text-gray-300 hover:text-orange-500">Products</a>
                 <a href="admin-orders.php" class="text-gray-300 hover:text-orange-500">Orders</a>
                 <a href="admin-reports.php" class="text-gray-300 hover:text-orange-500">Reports</a>
                 <a href="admin-settings.php" class="text-gray-300 hover:text-orange-500">Settings</a>
+                <a href="../logout.php" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">Logout</a>
             </div>
 
-            <a href="logout.php" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">Logout</a>
             <!-- Mobile Nav Toggle -->
-            <div class="md:hidden">
+            <div class="md:hidden flex items-center">
                 <button id="mobile-menu-button" class="text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </div>
         </div>
-        <!-- Mobile Nav -->
-        <div id="mobile-menu" class="md:hidden hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+    </nav>
+    <!-- Mobile Nav -->
+    <div id="mobile-menu" class="bg-blue-900 md:hidden hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <a href="index.php" class="text-orange-500 block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
             <a href="admin-users.php" class="text-gray-300 hover:text-white hover:bg-blue-800 block px-3 py-2 rounded-md text-base font-medium">Users</a>
             <a href="admin-orders.php" class="text-gray-300 hover:text-white hover:bg-blue-800 block px-3 py-2 rounded-md text-base font-medium">Orders</a>
@@ -114,8 +114,7 @@ try {
             <a href="add-cookie-policy.php" class="text-gray-300 hover:text-white hover:bg-blue-800 block px-3 py-2 rounded-md text-base font-medium">Cookie Policy</a>
             <a href="site-settings.php" class="text-gray-300 hover:text-white hover:bg-blue-800 block px-3 py-2 rounded-md text-base font-medium">Settings</a>
             <a href="../logout.php" class="text-gray-300 hover:text-white hover:bg-blue-800 block px-3 py-2 rounded-md text-base font-medium">Logout</a>
-        </div>
-    </nav>
+    </div>
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 py-8">
@@ -164,7 +163,7 @@ try {
                             <p class="font-semibold"><?= htmlspecialchars($u['first_name'] . " " . $u['last_name']) ?></p>
                             <p class="text-xs text-gray-500">New user registered</p>
                         </div>
-                        <span class="text-xs text-gray-500">ID: <?= $u['id'] ?></span>
+                        <span class="text-xs text-gray-500">ID: <?= htmlspecialchars($u['id']) ?></span>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -222,10 +221,10 @@ try {
                                             <?= $t['status'] === 'completed' ? 'bg-green-100 text-green-800' : 
                                                ($t['status'] === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                                'bg-red-100 text-red-800') ?>">
-                                            <?= ucfirst($t['status']) ?>
+                                            <?= htmlspecialchars(ucfirst($t['status'])) ?>
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3"><?= $t['created_at'] ?></td>
+                                    <td class="px-4 py-3"><?= htmlspecialchars($t['created_at']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -238,17 +237,15 @@ try {
     </div>
 
     <script>
-        // Mobile menu toggle
-        document.addEventListener('DOMContentLoaded', function () {
-            const btn = document.getElementById('mobile-menu-button');
-            const menu = document.getElementById('mobile-menu');
-            btn.addEventListener('click', () => {
-                menu.classList.toggle('hidden');
-            });
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
         });
+    });
     </script>
-    <!-- AlpineJS for dropdown -->
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
 
 </body>
 </html>
