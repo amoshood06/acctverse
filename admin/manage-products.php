@@ -1,21 +1,7 @@
 <?php
-session_start();
 require_once "../db/db.php";
 require_once "../flash.php";
-
-// ==================================================
-//  ADMIN AUTH CHECK
-// ==================================================
-
-// Ensure user exists AND is admin
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    set_flash("error", "Unauthorized access.");
-    header("Location: ../login.php");
-    exit;
-}
-
-// Current admin info
-$admin = $_SESSION['user'];
+include 'header.php';
 
 // Fetch products
 $stmt = $pdo->query("SELECT * FROM products ORDER BY id DESC");
@@ -23,27 +9,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Flash message (load once)
 $flash = get_flash();
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Manage Products - Admin</title>
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-@keyframes slideIn {
-    from { transform: translateX(120%); opacity: 0; }
-    to   { transform: translateX(0); opacity: 1; }
-}
-.animate-slide-in { animation: slideIn .4s ease-out; }
-</style>
-
-</head>
-<body class="bg-gray-100">
-
-<!-- FLASH TOAST -->
-<?php if (!empty($flash)): ?>
+?><?php if (!empty($flash)): ?>
 <div id="toast"
      class="fixed top-5 right-5 z-50 px-6 py-3 rounded-lg shadow-lg text-white 
             <?= ($flash['type'] === 'success') ? 'bg-green-600' : 'bg-red-600' ?> 
@@ -61,10 +27,8 @@ setTimeout(() => {
 </script>
 <?php endif; ?>
 
-
-
 <!-- PAGE HEADER -->
-<div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
+<div class="max-w-6xl mx-auto flex justify-between items-center">
     <h1 class="text-2xl font-bold text-blue-900">Manage Products</h1>
 
     <a href="add-product.php" 
@@ -75,7 +39,7 @@ setTimeout(() => {
 
 
 <!-- SEARCH + ADD BUTTON -->
-<div class="max-w-6xl mx-auto px-4 mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+<div class="max-w-6xl mx-auto mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
 
     <!-- Search Bar -->
     <input id="searchInput" 
@@ -95,7 +59,7 @@ setTimeout(() => {
 
 
 <!-- PRODUCT TABLE -->
-<div class="max-w-6xl mx-auto px-4">
+<div class="max-w-6xl mx-auto">
     <div class="overflow-x-auto bg-white shadow rounded-lg">
         <table class="w-full border-collapse">
             <thead>
@@ -171,6 +135,3 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
     });
 });
 </script>
-
-</body>
-</html>

@@ -1,14 +1,8 @@
 <?php
-session_start();
 require_once "../db/db.php";
 require_once "../flash.php";
+include 'header.php';
 
-// Admin authentication check
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    set_flash("error", "Unauthorized access. Please login as admin.");
-    header("Location: ../login.php");
-    exit;
-}
 
 $flash = get_flash();
 
@@ -78,37 +72,9 @@ try {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Management - AcctGlobe Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-</head>
-<body class="bg-gray-50">
-    <nav class="bg-blue-900 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <img src="../assets/image/acctverse.png" alt="Acctverse" class="w-32">
-                </div>
-                <div class="hidden md:flex items-center gap-8">
-                    <a href="index.php" class="text-gray-300 hover:text-orange-500">Dashboard</a>
-                    <a href="admin-users.php" class="text-gray-300 hover:text-orange-500">Users</a>
-                    <a href="manage-products.php" class="text-gray-300 hover:text-orange-500">Products</a>
-                    <a href="admin-orders.php" class="text-orange-500 font-medium">Orders</a>
-                    <a href="admin-transactions.php" class="text-gray-300 hover:text-orange-500">Transactions</a>
-                </div>
-                <a href="../logout.php" class="bg-orange-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">Logout</a>
-            </div>
-        </div>
-    </nav>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-blue-900 mb-8">Product Order Management</h1>
 
         <!-- Quick Stats -->
@@ -214,5 +180,3 @@ try {
     }).showToast();
     </script>
     <?php endif; ?>
-</body>
-</html>

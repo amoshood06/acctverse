@@ -1,14 +1,7 @@
 <?php
-session_start();
 require_once "../db/db.php";
 require_once '../flash.php';
-
-// Admin authentication check
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    set_flash("error", "Unauthorized access.");
-    header("Location: ../login.php");
-    exit;
-}
+include 'header.php';
 
 // Fetch current logo
 $current_logo_filename = 'acctverse.png'; // Default logo
@@ -59,19 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['site_logo'])) {
 }
 
 $flash = get_flash();
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin: Site Settings</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-</head>
-<body class="bg-gray-100">
-<div class="container mx-auto p-8">
+?>    
+    <div class="container mx-auto">
     <h1 class="text-3xl font-bold text-blue-900 mb-6">Site Settings</h1>
 
     <div class="bg-white p-8 rounded-lg shadow-md">

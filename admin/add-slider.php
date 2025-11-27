@@ -1,14 +1,7 @@
 <?php
-session_start();
 require_once "../db/db.php";
 require_once '../flash.php';
-
-// Check if user is admin
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    set_flash('error', 'Unauthorized access. Please login as admin.');
-    header("Location: ../login.php");
-    exit;
-}
+include 'header.php';
 
 $uploadDir = '../assets/image/sliders/';
 if (!is_dir($uploadDir)) {
@@ -88,19 +81,8 @@ try {
 }
 
 $flash = get_flash();
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin: Manage Slider</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-</head>
-<body class="bg-gray-100">
-<div class="container mx-auto p-8">
+?>    
+<div class="container mx-auto">
     <h1 class="text-3xl font-bold text-blue-900 mb-6">Manage Homepage Slider</h1>
 
     <!-- Add New Slide Form -->

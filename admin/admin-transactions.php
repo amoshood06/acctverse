@@ -1,13 +1,7 @@
 <?php
-session_start();
 require_once "../db/db.php";
 require_once "../flash.php";
-
-// Ensure user is admin
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    header("Location: ../user/login.php");
-    exit;
-}
+include 'header.php';
 
 $flash = get_flash();
 
@@ -73,35 +67,8 @@ try {
     $pendingWithdrawals = [];
     set_flash('error', 'Could not fetch withdrawals.');
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaction Management - Acctverse Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <nav class="bg-blue-900 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-orange-500 rounded-full"></div>
-                    <span class="font-bold text-lg text-white">Acctverse Admin</span>
-                </div>
-                <div class="hidden md:flex items-center gap-8">
-                    <a href="admin-dashboard.php" class="text-gray-300 hover:text-orange-500">Dashboard</a>
-                    <a href="admin-users.php" class="text-gray-300 hover:text-orange-500">Users</a>
-                    <a href="admin-transactions.php" class="text-orange-500 font-medium">Transactions</a>
-                </div>
-                <a href="../user/logout.php" class="bg-orange-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">Logout</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
+?>    
+    <div class="max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold text-blue-900 mb-8">Withdrawal Requests</h1>
 
         <?php if ($flash): ?>

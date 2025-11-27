@@ -1,6 +1,4 @@
 <?php
-session_start();
-
 require_once "./db/db.php"; // PDO connection (matches products.php)
 
 try {
@@ -66,6 +64,27 @@ try {
     $stmt->execute([$user_id, $product_id, $price, $quantity, $total_amount]);
 
     $order_id = $pdo->lastInsertId();
+
+    // Send order confirmation email
+    $user_email = $_SESSION['user']['email'];
+    $user_full_name = $user['full_name'];
+    $product_name = $product['product_name'];
+
+    $subject = "Your AcctVerse Order Confirmation (#" . $order_id . ")";
+    $message = "
+        Hello " . htmlspecialchars($user_full_name) . ",<br><br>
+        Thank you for your order. Here are the details:<br><br>
+        <strong>Order ID:</strong> #" . $order_id . "<br>
+        <strong>Product:</strong> " . htmlspecialchars($product_name) . "<br>
+        <strong>Quantity:</strong> " . htmlspecialchars($quantity) . "<br>
+        <strong>Total Amount:</strong> ₦" . number_format($total_amount, 2) . "<br><br>
+        You can view your order history in your dashboard.<br><br>
+        Regards,<br>The AcctVerse Team
+    ";
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+    $headers .= "From: noreply@acctverse.com\r\n";
+    mail($user_email, $subject, $message, $headers);
 
     // Redirect to success page
     header("Location: order-success.php?order_id=" . $order_id);

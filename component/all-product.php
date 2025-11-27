@@ -84,7 +84,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <!-- Product Image -->
                 <?php if (!empty($product['image'])): ?>
                     <img 
-                        src="uploads/<?= htmlspecialchars($product['image']) ?>" 
+                        src="./uploads/<?= htmlspecialchars($product['image']) ?>" 
                         class="w-full h-44 object-cover rounded mb-3"
                     >
                 <?php else: ?>

@@ -101,20 +101,20 @@ try {
       <p class="cart_two_text">Category</p>
     </button>
 
-    <!-- Category dropdown -->
+   
     <ul id="categoryMenu" class="dropdown--menu hidden absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5" style="z-index:9999;">
-      <li class="dropdown--menu__item"><a href="product.php?category=FACEBOOK" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=FACEBOOK" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">FACEBOOK</a></li>
 
-      <li class="dropdown--menu__item"><a href="product.php?category=INSTAGRAM" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">INSTAGRAM</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=INSTAGRAM" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">INSTAGRAM</a></li>
       
-      <li class="dropdown--menu__item"><a href="product.php?category=TIKTOK" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TIKTOK</a></li>
-      <li class="dropdown--menu__item"><a href="product.php?category=SNAPCHAT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SNAPCHAT</a></li>
-      <li class="dropdown--menu__item"><a href="product.php?category=RADDIT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">RADDIT</a></li>
-      <li class="dropdown--menu__item"><a href="product.php?category=LINKEDIN" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">LINKEDIN</a></li>
-      <li class="dropdown--menu__item"><a href="product.php?category=ENTERTAINMENT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ENTERTAINMENT</a></li>
-      <li class="dropdown--menu__item"><a href="product.php?category=TEXTING%20APPS" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TEXTING APPS</a></li>
-      <li class="dropdown--menu__item"><a href="product.php?category=VPN/PROXY" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">VPN/PROXY</a></li>
-      <li class="dropdown--menu__item"><a href="product.php?category=ACCTVERSE%20GIVEAWAY" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ACCTVERSE GIVEAWAY...</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=TIKTOK" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TIKTOK</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=SNAPCHAT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SNAPCHAT</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=RADDIT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">REDDIT</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=LINKEDIN" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">LINKEDIN</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=ENTERTAINMENT" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ENTERTAINMENT</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=TEXTING%20APPS" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">TEXTING APPS</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=VPN/PROXY" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">VPN/PROXY</a></li>
+      <li class="dropdown--menu__item"><a href="products.php?category=ACCTVERSE%20GIVEAWAY" class="dropdown--menu__link block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">ACCTVERSE GIVEAWAt...</a></li>
     </ul>
   </div>
 

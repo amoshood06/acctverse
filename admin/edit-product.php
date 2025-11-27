@@ -1,16 +1,7 @@
 <?php
-session_start();
 require_once "../db/db.php";
 require_once "../flash.php";
-
-// ==================================================
-// ADMIN CHECK
-// ==================================================
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    set_flash("error", "Unauthorized access.");
-    header("Location: ../login.php");
-    exit;
-}
+include 'header.php';
 
 // Validate product ID
 if (!isset($_GET['id'])) {
@@ -31,16 +22,8 @@ if (!$product) {
     header("Location: manage-products.php");
     exit;
 }
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Product</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-
-<div class="max-w-3xl mx-auto mt-10 bg-white shadow p-6 rounded">
+?>    
+<div class="max-w-3xl mx-auto bg-white shadow p-6 rounded">
     <h2 class="text-2xl font-bold text-blue-900 mb-4">Edit Product</h2>
 
     <form action="update-product.php" method="POST" enctype="multipart/form-data">

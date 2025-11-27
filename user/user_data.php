@@ -4,7 +4,7 @@ require_once "../flash.php";
 
 // Redirect if user not logged in
 if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 

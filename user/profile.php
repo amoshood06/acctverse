@@ -3,7 +3,7 @@ require_once "../db/db.php";  // your PDO connection
 require_once "../flash.php";
 
 if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 

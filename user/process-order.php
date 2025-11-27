@@ -6,7 +6,7 @@ require_once "../flash.php";
 // Redirect if user not logged in
 if (!isset($_SESSION['user'])) {
     set_flash("error", "You must be logged in to place an order.");
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
