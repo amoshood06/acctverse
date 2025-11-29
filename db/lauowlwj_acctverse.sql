@@ -20,11 +20,35 @@ SET time_zone = "+00:00";
 --
 -- Database: `lauowlwj_acctverse`
 --
-
+ALTER TABLE `users`
+ADD COLUMN `reset_token` VARCHAR(64) NULL DEFAULT NULL,
+ADD COLUMN `reset_token_expires_at` DATETIME NULL DEFAULT NULL;
 -- --------------------------------------------------------
 
-ALTER TABLE `users` ADD `referral_code` VARCHAR(255) NULL AFTER `verify_token`;
-ALTER TABLE `users` ADD `referred_by` INT(11) NULL AFTER `referral_code`;
+CREATE TABLE `referral_tiers` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tier_name` varchar(100) NOT NULL,
+  `min_referrals` int NOT NULL,
+  `commission_rate` decimal(5,4) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `referral_tiers` (`id`, `tier_name`, `min_referrals`, `commission_rate`, `description`) VALUES
+(1, 'Bronze', 0, '0.1000', 'Applies to referrers with 0-5 successful referrals.'),
+(2, 'Silver', 6, '0.1500', 'Applies to referrers with 6 or more successful referrals.');
+
+-- --------------------------------------------------------
+CREATE TABLE `monnify_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `api_key` varchar(255) DEFAULT NULL,
+  `secret_key` varchar(255) DEFAULT NULL,
+  `contract_code` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert a placeholder row
+INSERT INTO `monnify_settings` (`id`, `api_key`, `secret_key`, `contract_code`) VALUES (1, NULL, NULL, NULL);
 
 --
 -- Table structure for table `cookie_policy`
@@ -222,6 +246,28 @@ CREATE TABLE `referrals` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `referral_tiers`
+--
+
+CREATE TABLE `referral_tiers` (
+  `id` int NOT NULL,
+  `tier_name` varchar(100) NOT NULL,
+  `min_referrals` int NOT NULL,
+  `commission_rate` decimal(5,4) NOT NULL,
+  `description` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `referral_tiers`
+--
+
+INSERT INTO `referral_tiers` (`id`, `tier_name`, `min_referrals`, `commission_rate`, `description`) VALUES
+(1, 'Bronze', 0, '0.1000', 'Applies to referrers with 0-5 successful referrals.'),
+(2, 'Silver', 6, '0.1500', 'Applies to referrers with 6 or more successful referrals.');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sms_orders`
 --
 
@@ -336,6 +382,8 @@ CREATE TABLE `users` (
   `mobile` varchar(20) DEFAULT NULL,
   `country` varchar(100) DEFAULT NULL,
   `verify_token` text,
+  `referral_code` varchar(255) DEFAULT NULL,
+  `referred_by` int DEFAULT NULL,
   `first_name` varchar(255) DEFAULT NULL,
   `last_name` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
@@ -402,6 +450,12 @@ ALTER TABLE `terms_and_conditions`
 -- Indexes for table `site_settings`
 --
 ALTER TABLE `site_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `referral_tiers`
+--
+ALTER TABLE `referral_tiers`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -522,6 +576,12 @@ ALTER TABLE `orders`
 --
 ALTER TABLE `products`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `referral_tiers`
+--
+ALTER TABLE `referral_tiers`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `referrals`

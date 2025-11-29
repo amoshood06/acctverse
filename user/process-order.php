@@ -90,6 +90,47 @@ try {
         $pdo->prepare("INSERT INTO transactions (user_id, type, amount, description, status) VALUES (?, 'purchase', ?, ?, ?)")->execute([$user_id, $item['item_total_cost'], "Purchase of {$item['quantity']} units of {$item['product_name']}", 'completed']);
     }
 
+    // -----------------------------------------------------------
+    // ✅ START: TIERED REFERRAL COMMISSION LOGIC
+    // -----------------------------------------------------------
+    // Find out who referred the current user (the buyer)
+    $stmt_referrer = $pdo->prepare("SELECT referred_by FROM users WHERE id = ?");
+    $stmt_referrer->execute([$user_id]);
+    $referrer_data = $stmt_referrer->fetch(PDO::FETCH_ASSOC);
+
+    if ($referrer_data && !empty($referrer_data['referred_by'])) {
+        $referrer_id = $referrer_data['referred_by'];
+
+        // Count how many total referrals this referrer has
+        $stmt_ref_count = $pdo->prepare("SELECT COUNT(*) FROM users WHERE referred_by = ?");
+        $stmt_ref_count->execute([$referrer_id]);
+        $referral_count = $stmt_ref_count->fetchColumn();
+
+        // Get the correct commission rate from the database based on the number of referrals
+        $stmt_tier = $pdo->prepare(
+            "SELECT commission_rate FROM referral_tiers WHERE min_referrals <= ? ORDER BY min_referrals DESC LIMIT 1"
+        );
+        $stmt_tier->execute([$referral_count]);
+        $commission_rate = $stmt_tier->fetchColumn();
+        
+        // Calculate and award the commission
+        if ($commission_rate > 0) {
+            $commission_amount = $total_order_amount * $commission_rate;
+
+            // Add commission to the referrer's earnings balance
+            $stmt_award = $pdo->prepare("UPDATE users SET referral_earnings = referral_earnings + ? WHERE id = ?");
+            $stmt_award->execute([$commission_amount, $referrer_id]);
+
+            // Log the commission transaction for the referrer
+            $buyer_username = $_SESSION['user']['username'] ?? 'user #'.$user_id;
+            $stmt_log_commission = $pdo->prepare("INSERT INTO transactions (user_id, type, amount, description, status) VALUES (?, 'referral_earning', ?, ?, 'completed')");
+            $stmt_log_commission->execute([$referrer_id, $commission_amount, "Commission from {$buyer_username}'s purchase"]);
+        }
+    }
+    // -----------------------------------------------------------
+    // ✅ END: TIERED REFERRAL COMMISSION LOGIC
+    // -----------------------------------------------------------
+
     $pdo->commit();
     set_flash("success", "Your order has been placed successfully!");
     header("Location: order-history.php");

@@ -43,13 +43,13 @@ try {
     <!--dashboard-buttons-->
     <?php if($isLoggedIn): ?>
     <div class="dashboard-buttons hidden md:flex gap-3">
-      <a href="./user/index" class="bg-blue-500 hover:bg-blue-600 rounded-[5px] text-white font-bold py-[14px] px-[24px]">
+      <a href="./user/index.php" class="bg-blue-500 hover:bg-blue-600 rounded-[5px] text-white font-bold py-[14px] px-[24px]">
         Dashboard
       </a>
-      <a href="./user/profile" class="bg-purple-500 hover:bg-purple-600 rounded-[5px] text-white font-bold py-[14px] px-[24px]">
+      <a href="./user/profile.php" class="bg-purple-500 hover:bg-purple-600 rounded-[5px] text-white font-bold py-[14px] px-[24px]">
         Profile
       </a>
-      <a href="./user/logout" class="bg-red-500 hover:bg-red-600 rounded-[5px] text-white font-bold py-[14px] px-[24px]">
+      <a href="./user/logout.php" class="bg-red-500 hover:bg-red-600 rounded-[5px] text-white font-bold py-[14px] px-[24px]">
         Logout
       </a>
     </div>

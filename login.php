@@ -140,7 +140,7 @@ $flash = get_flash();
                         <input type="checkbox" id="remember" class="w-4 h-4 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
                         <label for="remember" class="text-sm text-gray-600">Remember Me</label>
                     </div>
-                    <a href="#" class="text-sm text-red-500 font-semibold hover:underline">Forgot your password?</a>
+                    <a href="forgot-password.php" class="text-sm text-red-500 font-semibold hover:underline">Forgot your password?</a>
                 </div>
 
                 <!-- Login Button -->
@@ -151,7 +151,7 @@ $flash = get_flash();
                 <!-- Register Link -->
                 <p class="text-center text-gray-600">
                     Haven't an account?
-                    <a href="#" class="text-red-500 font-semibold hover:underline">Register</a>
+                    <a href="register.php" class="text-red-500 font-semibold hover:underline">Register</a>
                 </p>
             </form>
         </div>

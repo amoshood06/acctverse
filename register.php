@@ -31,17 +31,24 @@ $flash = get_flash();
 $refCode = substr(sha1(uniqid()), 0, 10);
 
 // Detect referral link: ?ref=ABCDE12345
-$referredBy = null;
-
 if (isset($_GET['ref']) && !empty($_GET['ref'])) {
     $stmt = $pdo->prepare("SELECT id FROM users WHERE referral_code = ?");
     $stmt->execute([$_GET['ref']]);
     $refUser = $stmt->fetch();
 
     if ($refUser) {
-        $referredBy = $refUser['id'];
+        // Prevent users from referring themselves if they are somehow logged in
+        if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $refUser['id']) {
+            // Optional: set a flash message
+        } else {
+            // Store referrer in session to persist across reloads
+            $_SESSION['referred_by'] = $refUser['id'];
+        }
     }
 }
+
+// Use the referrer from session if available
+$referredBy = $_SESSION['referred_by'] ?? null;
 
 // -----------------------------------------------------------
 // ✅ HANDLE REGISTRATION FORM
@@ -108,6 +115,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $refCode,
             $referredBy
         ]);
+
+        // Clear the referrer from session after successful registration
+        unset($_SESSION['referred_by']);
 
         // Send verification email
         $subject = "Verify Your AcctVerse Account";

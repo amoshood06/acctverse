@@ -186,14 +186,14 @@ try {
     <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
         <h3 class="text-lg font-bold text-blue-900 mb-6">Referral Code</h3>
         <div class="flex gap-2 mb-6">
-            <input type="text" value="<?php echo $user['referral_code']; ?>" class="flex-1 px-4 py-2 border border-gray-300 rounded bg-gray-50" readonly>
-            <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" onclick="navigator.clipboard.writeText('<?php echo $user['referral_code']; ?>')">📋</button>
+            <input type="text" value="<?php echo htmlspecialchars($user['referral_code'] ?? ''); ?>" class="flex-1 px-4 py-2 border border-gray-300 rounded bg-gray-50" readonly>
+            <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" onclick="navigator.clipboard.writeText('<?php echo htmlspecialchars($user['referral_code'] ?? ''); ?>')">📋</button>
         </div>
 
         <h3 class="text-lg font-bold text-blue-900 mb-6">Referral Link</h3>
         <div class="flex gap-2">
-            <input type="text" value="https://acctverse.com/register?ref=<?php echo $user['referral_code']; ?>" class="flex-1 px-4 py-2 border border-gray-300 rounded bg-gray-50 text-sm" readonly>
-            <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" onclick="navigator.clipboard.writeText('https://acctverse.com/register?ref=<?php echo $user['referral_code']; ?>')">📋</button>
+            <input type="text" value="https://acctverse.com/register?ref=<?php echo htmlspecialchars($user['referral_code'] ?? ''); ?>" class="flex-1 px-4 py-2 border border-gray-300 rounded bg-gray-50 text-sm" readonly>
+            <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" onclick="navigator.clipboard.writeText('https://acctverse.com/register?ref=<?php echo htmlspecialchars($user['referral_code'] ?? ''); ?>')">📋</button>
         </div>
     </div>
 
@@ -218,11 +218,14 @@ try {
                 </div>
                 <div class="mb-4">
                     <label for="account_number" class="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
-                    <input type="text" name="account_number" id="account_number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500" required>
+                    <div class="flex gap-2">
+                        <input type="text" name="account_number" id="account_number" class="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500" required>
+                        <button type="button" onclick="verifyAccount()" class="bg-gray-200 text-sm px-3 rounded hover:bg-gray-300">Verify</button>
+                    </div>
                 </div>
                 <div class="mb-6">
                     <label for="account_name" class="block text-sm font-medium text-gray-700 mb-1">Account Name</label>
-                    <input type="text" name="account_name" id="account_name" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500" required>
+                    <input type="text" name="account_name" id="account_name" class="w-full px-4 py-2 border border-gray-300 rounded bg-gray-100 focus:outline-none focus:border-orange-500" required readonly>
                 </div>
                 <button type="submit" name="withdraw" class="w-full bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 font-medium">Submit Request</button>
             </form>
@@ -288,5 +291,47 @@ try {
     </div>
 
 </div>
+
+<script>
+async function verifyAccount() {
+    const bankSelect = document.getElementById('bank_name');
+    const accountNumber = document.getElementById('account_number').value;
+    const accountNameInput = document.getElementById('account_name');
+    
+    // Find the bank code from the selected option's data attribute (you would need to add this)
+    // For now, we'll just use the bank name as a placeholder for the logic.
+    const bankName = bankSelect.value;
+
+    if (!bankName || !accountNumber) {
+        alert("Please select a bank and enter an account number.");
+        return;
+    }
+
+    // In a real application, you would make an AJAX call to your server.
+    // Your server would then securely call the Paystack API.
+    // This is a simulation.
+    
+    // Example of what the server-side call might look like:
+    // const response = await fetch('verify-account.php', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ bank_code: '058', account_number: accountNumber })
+    // });
+    // const data = await response.json();
+
+    // Simulating a successful API response for demonstration
+    const simulatedData = {
+        status: true,
+        message: "Account number resolved",
+        data: { account_name: "JOHN DOE" }
+    };
+
+    if (simulatedData.status) {
+        accountNameInput.value = simulatedData.data.account_name;
+    } else {
+        alert("Could not verify account name. Please check the details and try again.");
+    }
+}
+</script>
 </body>
 </html>
