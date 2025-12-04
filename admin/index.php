@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php";
+$pdo = require_once "../db/db.php";
 require_once "../flash.php";
 include 'header.php';
 

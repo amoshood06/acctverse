@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php";
+$pdo = require_once "../db/db.php";
 require_once "../flash.php";
 
 // User authentication check
@@ -28,24 +28,9 @@ $orderStmt = $pdo->prepare("
 $orderStmt->execute([$user_id]);
 $orders = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMS Verification - Acctverse</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <img src="assets/image/acctverse.png" alt="Acctverse" class="w-[150px]">
-            <a href="index.php" class="text-orange-500 font-medium">← Back to Dashboard</a>
-        </div>
-    </nav>
+<?php
+require_once "header.php";
+?>
 
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 py-8">
@@ -132,7 +117,6 @@ $orders = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
             <p class="text-center text-gray-600 text-sm mt-6">No need to refresh the page to get the code. Click "<span class="bg-red-500 text-white px-2 py-1 rounded inline-block">X</span>" to cancel order.</p>
             <p class="text-center text-gray-600 text-sm">If your network is bad you may refresh.</p>
         </div>
-    </div>
 
     <?php if ($flash): ?>
     <script>
@@ -146,5 +130,6 @@ $orders = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
     }).showToast();
     </script>
     <?php endif; ?>
+</main>
 </body>
 </html>

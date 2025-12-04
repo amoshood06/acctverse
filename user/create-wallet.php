@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php"; // Use the correct db file which starts the session
+$pdo = require_once "../db/db.php"; // Use the correct db file which starts the session
 
 // 1. User Authentication: Ensure user is logged in
 if (!isset($_SESSION['user'])) {
@@ -26,25 +26,10 @@ if (!$user) {
 $customerName = $user['name'];
 $customerEmail = $user['email'];
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Wallet - AcctGlobe</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-orange-500 rounded-full"></div>
-                <span class="font-bold text-lg text-blue-900">AcctVerse</span>
-            </div>
-            <a href="index.php" class="text-orange-500 font-medium hover:text-orange-600 transition">← Back to Dashboard</a>
-        </div>
-    </nav>
+<?php
+require_once "header.php";
+?>
+
 
     <!-- Main Content -->
     <div class="max-w-2xl mx-auto px-4 py-8">
@@ -208,6 +193,7 @@ $customerEmail = $user['email'];
             validateForm();
         }
 
+
         function validateForm() {
             const amount = parseFloat(document.getElementById('amount').value) || 0;
             const agree = document.getElementById('agree').checked;
@@ -217,5 +203,6 @@ $customerEmail = $user['email'];
             submitBtn.disabled = !(amount >= 100 && agree);
         }
     </script>
+</main>
 </body>
 </html>

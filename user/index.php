@@ -1,5 +1,5 @@
 <?php 
-require_once "../db/db.php";  // Ensure $pdo is initialized
+$pdo = require_once "../db/db.php";  // Ensure $pdo is initialized
 require_once "../flash.php";
 
 // Redirect if user is not logged in
@@ -58,41 +58,10 @@ try {
 
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Acctverse</title>
-    <link rel="shortcut icon" href="assets/image/a.png" type="image/x-icon">
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation Header -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-orange-500 rounded-full"></div>
-                <img src="assets/image/acctverse.png" alt="" class="w-[150px]">
-            </div>
-            <div class="hidden md:flex items-center gap-8">
-                <a href="../index.php" class="text-blue-900 font-medium hover:text-red-500">Home</a>
-                <a href="products.php" class="text-gray-600 hover:text-red-500">Products</a>
-                <a href="sms-verification.php" class="text-gray-600 hover:text-red-500">SMS Verification</a>
-                <a href="fund-wallet.php" class="text-gray-600 hover:text-red-500">Fund</a>
-                <a href="payment-history.php" class="text-gray-600 hover:text-red-500">Payments</a>
-                <a href="referral.php" class="text-gray-600 hover:text-red-500">Refer&Earn</a>
-                <a href="order.php" class="text-gray-600 hover:text-red-500">Orders</a>
-                <a href="profile.php" class="text-gray-600 hover:text-red-500">Profile</a>
-                <a href="change-password.php" class="text-gray-600 hover:text-red-500">Password</a>
-            </div>
-            <form method="POST" action="logout.php">
-            <button class="bg-red-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">
-                Logout
-            </button>
-        </form>
-        </div>
-    </nav>
+<?php
+require_once "header.php";
+?>
+
 
     <!-- Flash message -->
 <?php if($flash): ?>
@@ -110,8 +79,7 @@ Toastify({
 </script>
 <?php endif; ?>
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
             <!-- My Information Card -->
             <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div class="bg-red-500 text-white p-4 font-bold">My Information</div>
@@ -222,6 +190,6 @@ Toastify({
                 </table>
             </div>
         </div>
-    </div>
+</main>
 </body>
 </html>

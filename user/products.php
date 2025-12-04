@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php";
+$pdo = require_once "../db/db.php";
 require_once "../flash.php";
 
 // Redirect if user not logged in
@@ -50,33 +50,13 @@ try {
     set_flash("error", "Could not load products.");
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products - Acctverse</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation Header -->
-    <nav class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <img src="assets/image/acctverse.png" alt="Acctverse" class="w-[150px]">
-            <div class="hidden md:flex items-center gap-6">
-                <a href="index.php" class="text-gray-600 hover:text-orange-500">Dashboard</a>
-                <a href="order-history.php" class="text-gray-600 hover:text-orange-500">Orders</a>
-                <a href="products.php" class="text-blue-900 font-medium">Products</a>
-            </div>
-            <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded font-medium hover:bg-orange-600">Logout</a>
-        </div>
-    </nav>
+<?php
+require_once "header.php";
+?>
+
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Category and Search -->
+    <!-- Category and Search -->
         <form method="GET" action="products.php">
             <div class="flex flex-col md:flex-row gap-4 mb-8">
                 <select name="category" onchange="this.form.submit()" class="bg-white border border-gray-300 px-4 py-2 rounded focus:outline-none focus:border-orange-500">
@@ -143,7 +123,6 @@ try {
                 <?php endif; ?>
             </div>
         </form>
-    </div>
 
     <?php if ($flash): ?>
     <script>
@@ -178,5 +157,6 @@ try {
         document.getElementById('total-price').textContent = '₦' + totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     </script>
+</main>
 </body>
 </html>

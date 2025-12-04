@@ -18,13 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Detect email or username
         if (strpos($input, '@') !== false) {
             $stmt = $pdo->prepare("
-                SELECT id, full_name, first_name, last_name, email, username, password_hash, role, is_verified 
+                SELECT id, full_name, first_name, last_name, email, username, password_hash, role 
                 FROM users 
                 WHERE email = ?
             ");
         } else {
             $stmt = $pdo->prepare("
-                SELECT id, full_name, first_name, last_name, email, username, password_hash, role, is_verified 
+                SELECT id, full_name, first_name, last_name, email, username, password_hash, role 
                 FROM users 
                 WHERE username = ?
             ");
@@ -46,12 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Check email verification
-        if (!$user['is_verified']) {
-            set_flash('error', 'Please verify your email before logging in.');
-            header('Location: login.php');
-            exit;
-        }
+        // // Check email verification
+        // if (!$user['is_verified']) {
+        //     set_flash('error', 'Please verify your email before logging in.');
+        //     header('Location: login.php');
+        //     exit;
+        // }
 
         // Set SESSION
         $_SESSION['user'] = [

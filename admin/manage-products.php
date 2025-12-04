@@ -3,13 +3,18 @@ require_once "../db/db.php";
 require_once "../flash.php";
 include 'header.php';
 
-// Fetch products
-$stmt = $pdo->query("SELECT * FROM products ORDER BY id DESC");
+// Fetch products with sub-category name
+$stmt = $pdo->query("
+    SELECT p.*
+    FROM products p
+    ORDER BY p.id DESC
+");
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Flash message (load once)
 $flash = get_flash();
-?><?php if (!empty($flash)): ?>
+?>
+<?php if (!empty($flash)): ?>
 <div id="toast"
      class="fixed top-5 right-5 z-50 px-6 py-3 rounded-lg shadow-lg text-white 
             <?= ($flash['type'] === 'success') ? 'bg-green-600' : 'bg-red-600' ?> 
@@ -67,8 +72,8 @@ setTimeout(() => {
                     <th class="p-3 text-left">Image</th>
                     <th class="p-3 text-left">Name</th>
                     <th class="p-3 text-left">Category</th>
+                    <th class="p-3 text-left">Sub-Category</th>
                     <th class="p-3 text-left">Price</th>
-                    <th class="p-3 text-left">Stock</th>
                     <th class="p-3 text-left">Actions</th>
                 </tr>
             </thead>
@@ -86,9 +91,9 @@ setTimeout(() => {
                     </td>
 
                     <td class="p-3"><?= htmlspecialchars($p['product_name']); ?></td>
-                    <td class="p-3"><?= htmlspecialchars($p['category']); ?></td>
+                    <td class="p-3"><?= htmlspecialchars($p['category'] ?? 'N/A'); ?></td>
+                    <td class="p-3"><?= htmlspecialchars($p['sub_category'] ?? 'N/A'); ?></td>
                     <td class="p-3">₦<?= number_format($p['price']); ?></td>
-                    <td class="p-3"><?= htmlspecialchars($p['stock']); ?></td>
 
                     <td class="p-3 flex gap-2">
                         <!-- Edit -->

@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php";  // your PDO connection
+$pdo = require_once "../db/db.php"; // your PDO connection
 require_once "../flash.php";
 
 if (!isset($_SESSION['user'])) {
@@ -52,25 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $flash = get_flash();
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile - AcctGlobe</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-</head>
-<body class="bg-gray-50">
+<?php
+require_once "header.php";
+?>
 
-<!-- Navigation -->
-<nav class="bg-white shadow-sm sticky top-0 z-10">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <img src="assets/image/acctverse.png" alt="" class="w-[150px]">
-        <a href="index.php" class="text-orange-500 font-medium">← Back to Dashboard</a>
-    </div>
-</nav>
 
 <!-- Main Content -->
 <div class="max-w-4xl mx-auto px-4 py-8">
@@ -138,7 +123,6 @@ $flash = get_flash();
             <button type="submit" class="w-full bg-red-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition">Update Profile</button>
         </form>
     </div>
-</div>
 
 <?php if($flash): ?>
 <script>
@@ -174,5 +158,6 @@ updatePhoneCode();
 countrySelect.addEventListener('change', updatePhoneCode);
 </script>
 
+</main>
 </body>
 </html>

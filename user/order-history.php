@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php";
+$pdo = require_once "../db/db.php";
 require_once "../flash.php";
 
 // Redirect if user not logged in
@@ -33,11 +33,10 @@ try {
             o.created_at, 
             o.total_amount, 
             o.quantity, 
-            p.product_name,
+            o.product_name,
             o.status,
             o.admin_note
         FROM orders o
-        JOIN products p ON o.product_id = p.id
         WHERE o.user_id = ?
         ORDER BY o.created_at DESC 
         LIMIT ? OFFSET ?
@@ -53,23 +52,10 @@ try {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order History</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <img src="assets/image/acctverse.png" alt="Acctverse" class="w-[150px]">
-            <a href="index.php" class="text-orange-500 font-medium">← Back to Dashboard</a>
-        </div>
-    </nav>
-    <div class="min-h-screen p-4 md:p-8">
+<?php
+require_once "header.php";
+?>
+    <div class="min-h-screen">
         <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-sm p-6">
             <!-- Header with Search -->
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
@@ -157,5 +143,6 @@ try {
         <?php endif; ?>
 
     </div>
+</main>
 </body>
 </html>

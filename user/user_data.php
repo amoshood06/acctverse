@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php";
+$pdo = require_once "../db/db.php";
 require_once "../flash.php";
 
 // Redirect if user not logged in
@@ -33,25 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Data - Acctverse</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="shortcut icon" href="assets/image/a.png" type="image/x-icon">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-</head>
-<body class="bg-gray-50">
+<?php
+require_once "header.php";
+?>
 
-<nav class="bg-white shadow-sm sticky top-0 z-10">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-    <img src="assets/image/acctverse.png" alt="Acctverse" class="w-[150px]">
-    <a href="index.php" class="text-red-500 font-medium">← Back to Dashboard</a>
-  </div>
-</nav>
 
 <div class="max-w-2xl mx-auto px-4 py-8">
   <div class="bg-white rounded-lg shadow-sm p-6 md:p-8">
@@ -70,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit" class="w-full bg-red-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition">Submit</button>
     </form>
   </div>
-</div>
 
 <?php if ($flash): ?>
 <script>
@@ -85,5 +69,6 @@ Toastify({
 </script>
 <?php endif; ?>
 
+</main>
 </body>
 </html>

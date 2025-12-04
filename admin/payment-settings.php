@@ -12,7 +12,7 @@ $message_type = '';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    include('../db/db.php'); // Connect to DB for POST request
+ include('../db/db.php'); // Connect to DB for POST request
 
     $apiKey = trim($_POST['api_key']);
     $secretKey = trim($_POST['secret_key']);

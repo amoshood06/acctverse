@@ -20,6 +20,38 @@ SET time_zone = "+00:00";
 --
 -- Database: `lauowlwj_acctverse`
 --
+ALTER TABLE `products`
+ADD COLUMN `sub_category_id` INT(11) NULL DEFAULT NULL,
+ADD CONSTRAINT `fk_sub_category` FOREIGN KEY (`sub_category_id`) REFERENCES `sub_categories`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+-- --------------------------------------------------------
+ALTER TABLE products DROP COLUMN stock;
+--- ------------------------------------------------------
+ALTER TABLE `products` ADD `admin_note` TEXT NULL DEFAULT NULL AFTER `image`;
+-- --------------------------------------------------------
+CREATE TABLE `sub_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `sub_categories` (`name`) VALUES
+('Laptops'),
+('Smartphones'),
+('Gaming Consoles'),
+('Accessories');
+
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `parent_id` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `parent_id` (`parent_id`),
+  CONSTRAINT `categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- --------------------------------------------------------
+
 ALTER TABLE `users`
 ADD COLUMN `reset_token` VARCHAR(64) NULL DEFAULT NULL,
 ADD COLUMN `reset_token_expires_at` DATETIME NULL DEFAULT NULL;

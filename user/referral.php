@@ -1,5 +1,5 @@
 <?php
-require_once "../db/db.php";  // Ensure $pdo is initialized
+$pdo = require_once "../db/db.php"; // Ensure $pdo is initialized
 require_once "../flash.php";
 
 // A list of Nigerian banks for the withdrawal form.
@@ -114,28 +114,10 @@ try {
     $withdrawalHistory = [];
 }
 ?>
+<?php
+require_once "header.php";
+?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Referral & Earnings - Acctverse</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-    .status-pending { background-color: #fef9c3; color: #ca8a04; }
-    .status-completed { background-color: #dcfce7; color: #16a34a; }
-    .status-rejected { background-color: #fee2e2; color: #dc2626; }
-</style>
-</head>
-<body class="bg-gray-50">
-<!-- Navigation -->
-<nav class="bg-white shadow-sm sticky top-0 z-10">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <img src="assets/image/acctverse.png" alt="" class="w-[150px]">
-        <a href="dashboard.php" class="text-orange-500 font-medium">← Back to Dashboard</a>
-    </div>
-</nav>
 
 <!-- Main Content -->
 <div class="max-w-4xl mx-auto px-4 py-8">
@@ -290,8 +272,6 @@ try {
         </div>
     </div>
 
-</div>
-
 <script>
 async function verifyAccount() {
     const bankSelect = document.getElementById('bank_name');
@@ -333,5 +313,6 @@ async function verifyAccount() {
     }
 }
 </script>
+</main>
 </body>
 </html>

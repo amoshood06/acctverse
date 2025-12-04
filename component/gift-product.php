@@ -8,20 +8,7 @@ $allProducts = [];
 
 // Fetch products for each category
 foreach ($categories as $cat) {
-    // Group by sub_category to show one entry per sub-category
-    // We get the total stock, the lowest price, and an example product ID and name.
-    $stmt = $pdo->prepare("
-        SELECT 
-            sub_category,
-            COUNT(id) as total_stock,
-            MIN(price) as min_price,
-            MIN(product_name) as product_name,
-            MIN(id) as product_id
-        FROM products 
-        WHERE category = ? AND sub_category IS NOT NULL AND sub_category != ''
-        GROUP BY sub_category
-        ORDER BY sub_category
-    ");
+    $stmt = $pdo->prepare("SELECT * FROM products WHERE category = ?");
     $stmt->execute([$cat]);
     $allProducts[$cat] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -45,9 +32,9 @@ foreach ($categories as $cat) {
 
     <div class="space-y-4">
         <?php if (!empty($allProducts[$category])): ?>
-            <?php foreach ($allProducts[$category] as $sub_category_group): ?>
+            <?php foreach ($allProducts[$category] as $product): ?>
             <!-- Each product gets a unique x-data scope to manage its own modal state -->
-            <div x-data="{ isModalOpen: false, qty: 1, price: <?= $sub_category_group['min_price'] ?> }" class="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+            <div x-data="{ isModalOpen: false, qty: 1, price: <?= $product['price'] ?> }" class="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
 
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
@@ -55,7 +42,14 @@ foreach ($categories as $cat) {
                         <!-- Product Image -->
                         <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
 
-                            
+                            <?php 
+                            $imagePath = "uploads/" . $product['image']; 
+                            ?>
+
+                            <?php if (!empty($product['image']) && file_exists($imagePath)): ?>
+                                <img src="<?= $imagePath ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" class="w-full h-full object-cover">
+
+                            <?php else: ?>
                                 <!-- Fallback Category Icons -->
                                 <?php
                                 $color = "bg-gray-500";
@@ -70,15 +64,15 @@ foreach ($categories as $cat) {
                                 <div class="w-full h-full <?= $color ?> flex items-center justify-center text-white font-bold">
                                     <?= $text ?>
                                 </div>
-                            
+                            <?php endif; ?>
 
                         </div>
 
                         <div>
-                            <h3 class="font-bold text-gray-900 text-sm md:text-base"><?= htmlspecialchars($sub_category_group['sub_category'])?></h3>
-                            <p class="text-green-600 text-sm font-semibold mt-1">In Stock: <?= intval($sub_category_group['total_stock']) ?> qty.</p>
+                            <h3 class="font-bold text-gray-900 text-sm md:text-base"><?= htmlspecialchars($product['product_name']) ?></h3>
+                            <p class="text-green-600 text-sm font-semibold mt-1">In Stock: <?= intval($product['stock']) ?> qty.</p>
                             <p class="text-gray-700 text-sm mt-1">Per Quantity: 
-                                <span class="font-bold text-gray-900">₦<?= number_format($sub_category_group['min_price'], 2) ?></span>
+                                <span class="font-bold text-gray-900">₦<?= number_format($product['price'], 2) ?></span>
                             </p>
                         </div>
                     </div>
@@ -97,30 +91,60 @@ foreach ($categories as $cat) {
                     <div @click.away="isModalOpen = false" 
                          class="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
 
-                        <h2 class="text-xl font-bold mb-2"><?= htmlspecialchars($sub_category_group['sub_category']) ?></h2>
+                        <?php if (!empty($product['image']) && file_exists($imagePath)): ?>
+                            <img src="<?= $imagePath ?>" 
+                                 alt="<?= htmlspecialchars($product['product_name']) ?>" 
+                                 class="w-full h-48 object-cover rounded mb-4">
+                        <?php endif; ?>
 
-                        <p class="text-gray-700 mb-2"><strong>Category:</strong> <?= htmlspecialchars($category) ?></p>
-                        <p class="text-gray-700 mb-2"><strong>Description:</strong> Accounts from the <?= htmlspecialchars($sub_category_group['sub_category']) ?> pool.</p>
+                        <h2 class="text-xl font-bold mb-2"><?= htmlspecialchars($product['product_name']) ?></h2>
+
+                        <p class="text-gray-700 mb-2"><strong>Category:</strong> <?= htmlspecialchars($product['category']) ?></p>
+                        <p class="text-gray-700 mb-2"><strong>Description:</strong> <?= htmlspecialchars($product['description']) ?></p>
 
                         <!-- Price -->
                         <p class="text-gray-700 mb-1">
-                            <strong>Price per unit:</strong> ₦<?= number_format($sub_category_group['min_price'], 2) ?>
+                            <strong>Price per unit:</strong> ₦<?= number_format($product['price'], 2) ?>
                         </p>
 
-                        <div class="mt-4">
-                            <strong class="text-gray-700">Quantity: 1</strong>
+                        <!-- Quantity Selector -->
+                        <div class="mt-4 flex items-center gap-4">
+                            <strong class="text-gray-700">Quantity:</strong>
+
+                            <div class="flex items-center border rounded-lg overflow-hidden">
+
+                                <!-- Minus Button -->
+                                <button type="button"
+                                        @click="if(qty > 1) qty--"
+                                        class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-lg font-bold">
+                                    −
+                                </button>
+
+                                <!-- Quantity Display -->
+                                <input type="text" 
+                                       x-model="qty"
+                                       class="w-16 text-center border-l border-r py-2 text-gray-700"
+                                       readonly>
+
+                                <!-- Plus Button -->
+                                <button type="button"
+                                        @click="qty++"
+                                        class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-lg font-bold">
+                                    +
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Total Price -->
                         <p class="text-green-600 font-semibold mt-3">
-                            Total: ₦<span x-text="price.toLocaleString()"></span>
+                            Total: ₦<span x-text="(qty * price).toLocaleString()"></span>
                         </p>
 
                         <!-- Buy Form -->
                         <!-- Form now uses POST method and properly binds qty value with x-model.number -->
                         <form action="buy-product.php" method="POST" class="mt-5">
-                            <input type="hidden" name="product_id" value="<?= $sub_category_group['product_id'] ?>">
-                            <input type="hidden" name="quantity" value="1">
+                            <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+                            <input type="hidden" name="quantity" x-model.number="qty">
 
                             <button type="submit" 
                                 class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">

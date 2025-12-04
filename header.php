@@ -73,7 +73,7 @@ try {
             <a href="<?php echo $isLoggedIn ? './user/product' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Product</a>
             <a href="<?php echo $isLoggedIn ? './user/sms-verification' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SMS Verification</a>
             <a href="<?php echo $isLoggedIn ? '' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Add Fund</a>
-            <a href="coming-soon" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Boost Accounts</a>
+            <a href="gift.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Gift Delivery</a>
             <a href="" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Contact</a>
           </div>
           <!-- auth buttons -->
@@ -143,8 +143,8 @@ try {
        <a href="./user/product">Product</a>
       <a href="./user/sms-verification">SMS Verification</a>
       <a href="">Add Fund</a>
-      <a href="coming-sson">Boost Accounts</a>
-      <a href="">Contact</a>
+      <a href="gift.php">Gift Delivery</a>
+      <a href="help-center.php">Contact</a>
     </div>
 </header>
 <script>

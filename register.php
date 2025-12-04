@@ -94,49 +94,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         // Hash Password + Generate Verification Token
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        $token = bin2hex(random_bytes(32));
 
         // Insert new user with referral code + referredBy
         $stmt = $pdo->prepare("
             INSERT INTO users 
-            (full_name, username, email, mobile_code, mobile, country, password_hash, role, is_verified, verify_token, referral_code, referred_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'user', 0, ?, ?, ?)
+            (full_name, username, email, mobile_code, mobile, country, password_hash, role, referral_code, referred_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'user', ?, ?)
         ");
 
         $stmt->execute([
-            $full_name,
-            $username,
-            $email,
-            $mobile_code,
-            $mobile,
-            $country,
-            $password_hash,
-            $token,
-            $refCode,
-            $referredBy
+            $full_name, $username, $email,
+            $mobile_code, $mobile, $country,
+            $password_hash, $refCode, $referredBy
         ]);
 
         // Clear the referrer from session after successful registration
         unset($_SESSION['referred_by']);
 
-        // Send verification email
-        $subject = "Verify Your AcctVerse Account";
-        $verifyLink = "https://acctverse.com/verify.php?token=" . $token;
-
-        $message = "
-            Hello $full_name,<br><br>
-            Thank you for registering. Please verify your account:<br>
-            <a href='$verifyLink'>Verify Account</a><br><br>
-            Regards,<br> AcctVerse Team
-        ";
-
-        $headers  = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: noreply@acctverse.com\r\n";
-
-        mail($email, $subject, $message, $headers);
-
-        set_flash("success", "Registration successful! Please check your email to verify your account.");
+        set_flash("success", "Registration successful! You can now log in.");
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
 

@@ -26,13 +26,22 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 $product_name = trim($_POST['product_name'] ?? '');
 $category     = trim($_POST['category'] ?? '');
 $description  = trim($_POST['description'] ?? '');
-$price        = trim($_POST['price'] ?? '');
-$stock        = trim($_POST['stock'] ?? '');
+$price        = trim($_POST['price'] ?? ''); // Assuming price is always provided
+$sub_category = trim($_POST['sub_category'] ?? ''); // Now directly getting the sub-category name
+$admin_note   = trim($_POST['admin_note'] ?? '');
+
+// Fetch main category name
+$main_category_name = '';
+if ($category) { // $category here is the ID
+    $stmt_cat_name = $pdo->prepare("SELECT name FROM categories WHERE id = ?");
+    $stmt_cat_name->execute([$category]);
+    $main_category_name = $stmt_cat_name->fetchColumn();
+}
 
 // ==================================================
 // REQUIRED VALIDATION
 // ==================================================
-if ($product_name === '' || $category === '' || $description === '' || $price === '' || $stock === '') {
+if ($product_name === '' || $category === '' || $description === '' || $price === '') {
     set_flash("error", "All fields are required.");
     header("Location: add-product.php");
     exit;
@@ -76,17 +85,18 @@ if (!empty($_FILES['image']['name'])) {
 // ==================================================
 try {
     $stmt = $pdo->prepare("
-        INSERT INTO products (product_name, category, description, price, stock, image)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO products (product_name, category, sub_category, description, price, image, admin_note)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
 
     $stmt->execute([
         $product_name,
-        $category,
+        $main_category_name,
+        $sub_category, // Use the sub-category name directly
         $description,
         $price,
-        $stock,
-        $imagePath
+        $imagePath,
+        $admin_note
     ]);
 
     set_flash("success", "Product added successfully!");

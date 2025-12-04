@@ -23,11 +23,9 @@ try {
     // Fetch order details
     $stmt = $pdo->prepare("
         SELECT 
-            o.id, o.total_amount, o.quantity, o.created_at,
-            p.product_name, p.image
+            id, total_amount, quantity, created_at, product_name, image
         FROM orders o
-        JOIN products p ON o.product_id = p.id
-        WHERE o.id = ? AND o.user_id = ?
+        WHERE id = ? AND user_id = ?
     ");
     $stmt->execute([$order_id, $user_id]);
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -66,8 +64,7 @@ include 'header.php';
             <!-- Order Summary -->
             <div class="border-t border-b border-gray-200 py-6 my-6 text-left">
                 <h2 class="text-xl font-semibold text-blue-900 mb-4">Order Summary</h2>
-                <div class="flex items-center gap-4">
-                    <img src="assets/image/<?= htmlspecialchars($order['image']) ?>" alt="<?= htmlspecialchars($order['product_name']) ?>" class="w-20 h-20 object-cover rounded-lg">
+                <div class="flex items-center gap-4">                    <img src="uploads/<?= htmlspecialchars($order['image']) ?>" alt="<?= htmlspecialchars($order['product_name']) ?>" class="w-20 h-20 object-cover rounded-lg">
                     <div class="flex-grow">
                         <p class="font-semibold text-gray-800"><?= htmlspecialchars($order['product_name']) ?></p>
                         <p class="text-sm text-gray-500">Quantity: <?= htmlspecialchars($order['quantity']) ?></p>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "../db/db.php";
+$pdo = require_once "../db/db.php";
 
 if (!isset($_SESSION['user'])) {
     header("Location: ../login.php");
@@ -39,26 +39,11 @@ try {
     // You might want to log the error: error_log($e->getMessage());
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Transactions - Acctverse</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <img src="assets/image/acctverse.png" alt="" class="w-[150px]">
-            <a href="dashboard.php" class="text-orange-500 font-medium hover:text-orange-600">← Back to Dashboard</a>
-        </div>
-    </nav>
+<?php
+require_once "header.php";
+?>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Header -->
+    <!-- Header -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-blue-900 mb-2">All Transactions</h1>
             <p class="text-gray-600">View and manage all your account transactions</p>
@@ -138,7 +123,6 @@ try {
                 </table>
             </div>
         </div>
-    </div>
 
     <!-- Footer -->
     <footer class="bg-blue-900 text-white mt-16 py-8">
@@ -146,5 +130,6 @@ try {
             <p>&copy; <?php echo date("Y"); ?> Acctverse. All rights reserved.</p>
         </div>
     </footer>
+</main>
 </body>
 </html>

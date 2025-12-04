@@ -16,6 +16,7 @@ $pages = [
     'admin-users.php' => 'Users',
     'manage-products.php' => 'Products',
     'admin-orders.php' => 'Product Orders',
+    'manage-categories.php' => ' Manage Categories',
     'admin-sms-verification.php' => 'SMS Services',
     'admin-sms-orders.php' => 'SMS Orders',
     'admin-transactions.php' => 'Transactions',

@@ -1,13 +1,13 @@
 <?php
 // Database connection settings
-$host = "localhost";
-$dbname = "lauowlwj_acctverse";
-$username = "lauowlwj_acctverse";
-$password = "acctverse123";
 // $host = "localhost";
-// $dbname = "9tech";
-// $username = "root";
-// $password = "";
+// $dbname = "lauowlwj_acctverse";
+// $username = "lauowlwj_acctverse";
+// $password = "acctverse123";
+$host = "localhost";
+$dbname = "9tech";
+$username = "root";
+$password = "";
 
 try {
     // Create PDO instance
@@ -20,4 +20,6 @@ try {
     // Stop the script if connection fails
     die("Database connection failed: " . $e->getMessage());
 }
+
+return $pdo;
 ?>

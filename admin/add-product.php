@@ -1,6 +1,22 @@
 <?php
 require_once "../flash.php";
+require_once "../db/db.php"; // Include the database connection
 include 'header.php';
+
+// Fetch parent categories from the database
+$categories = [];
+$stmt_cat = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
+if ($stmt_cat) {
+    $categories = $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Fetch sub-categories from the database
+$sub_categories = [];
+$stmt_sub = $pdo->query("SELECT id, name FROM sub_categories ORDER BY name ASC");
+if ($stmt_sub) {
+    $sub_categories = $stmt_sub->fetchAll(PDO::FETCH_ASSOC);
+}
+
 $flash = get_flash();
 ?>
 <?php if (!empty($flash)): ?>
@@ -41,13 +57,17 @@ setTimeout(() => {
         <label class="block mb-2 font-semibold text-blue-900">Category *</label>
         <select name="category" required class="w-full border px-4 py-2 rounded mb-4">
             <option value="">Select Category</option>
-            <option>Facebook</option>
-            <option>Twitter</option>
-            <option>Instagram</option>
-            <option>TikTok</option>
-            <option>YouTube</option>
-            <option>LinkedIn</option>
-            <option>Other</option>
+            <?php foreach ($categories as $category): ?>
+                <option value="<?= htmlspecialchars($category['id']) ?>"><?= htmlspecialchars($category['name']) ?></option>
+            <?php endforeach; ?>
+        </select>        
+
+        <label class="block mb-2 font-semibold text-blue-900">Sub-Category</label>
+        <select name="sub_category" class="w-full border px-4 py-2 rounded mb-4">
+            <option value="">Select Sub-Category (Optional)</option>
+            <?php foreach ($sub_categories as $sub_category): ?>
+                <option value="<?= htmlspecialchars($sub_category['name']) ?>"><?= htmlspecialchars($sub_category['name']) ?></option>
+            <?php endforeach; ?>
         </select>
 
         <label class="block mb-2 font-semibold text-blue-900">Description *</label>
@@ -56,8 +76,8 @@ setTimeout(() => {
         <label class="block mb-2 font-semibold text-blue-900">Price (₦) *</label>
         <input type="number" name="price" required class="w-full border px-4 py-2 rounded mb-4">
 
-        <label class="block mb-2 font-semibold text-blue-900">Stock Quantity *</label>
-        <input type="number" name="stock" required class="w-full border px-4 py-2 rounded mb-4">
+        <label class="block mb-2 font-semibold text-blue-900">Admin Note (e.g. Account Details)</label>
+        <textarea name="admin_note" placeholder="Enter account details or other admin-only notes here..." class="w-full border px-4 py-2 rounded mb-4"></textarea>
 
         <label class="block mb-2 font-semibold text-blue-900">Product Image *</label>
         <input type="file" name="image" accept="image/*" required class="w-full border px-4 py-2 rounded mb-6">

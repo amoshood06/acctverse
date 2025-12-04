@@ -25,11 +25,10 @@ try {
 $sql = "
     SELECT 
         o.id, o.total_amount, o.status, o.created_at, o.admin_note,
-        p.product_name,
+        o.product_name,
         u.first_name, u.last_name
     FROM orders o
     JOIN users u ON o.user_id = u.id
-    JOIN products p ON o.product_id = p.id
 ";
 
 $params = [];
