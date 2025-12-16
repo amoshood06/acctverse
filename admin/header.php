@@ -3,11 +3,28 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once "../db/db.php"; // Include database connection
+
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     // set_flash("error", "Unauthorized access. Please login as admin.");
     header("Location: ../login.php");
     exit;
 }
+
+// Fetch current logo from database
+$site_logo = 'acctverse.png'; // Default logo
+try {
+    $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_name = 'site_logo'");
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result && !empty($result['setting_value'])) {
+        $site_logo = $result['setting_value'];
+    }
+} catch (Exception $e) {
+    // Log error or handle gracefully, perhaps display default logo
+    error_log("Database error fetching site logo: " . $e->getMessage());
+}
+$logo_path = '../assets/image/' . $site_logo;
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
@@ -51,7 +68,9 @@ $pages = [
         <div class="max-w-7xl mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <a href="index.php" class="font-bold text-lg text-white">Acctverse Admin</a>
+                    <a href="index.php" class="font-bold text-lg text-white">
+                            <img src="<?= htmlspecialchars($logo_path) ?>" alt="Acctverse Logo" class="h-8 inline-block mr-2">
+                        </a>
                 </div>
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center gap-4 flex-wrap">
