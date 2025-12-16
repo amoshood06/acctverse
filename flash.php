@@ -1,7 +1,6 @@
 <?php
 // flash.php
 session_start();
-
 /**
  * Set a flash message into session
  * 

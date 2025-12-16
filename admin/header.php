@@ -15,6 +15,7 @@ $pages = [
     'index.php' => 'Dashboard',
     'admin-users.php' => 'Users',
     'manage-products.php' => 'Products',
+    'manage-gift-products.php' => 'Manage Gift',
     'admin-orders.php' => 'Product Orders',
     'manage-categories.php' => ' Manage Categories',
     'admin-sms-verification.php' => 'SMS Services',

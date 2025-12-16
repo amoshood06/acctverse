@@ -17,36 +17,11 @@ function e_about($field, $default = '') {
     return htmlspecialchars($content[$field] ?? $default);
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Acctglobe</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-orange-500 rounded-lg"></div>
-                    <span class="font-bold text-lg">Acctglobe</span>
-                </div>
-                <div class="hidden md:flex gap-8">
-                    <a href="index" class="text-gray-700 hover:text-orange-500">Home</a>
-                    <a href="about-us" class="text-orange-500 font-semibold">About Us</a>
-                    <a href="#" class="text-gray-700 hover:text-orange-500">Services</a>
-                    <a href="#" class="text-gray-700 hover:text-orange-500">Contact</a>
-                </div>
-                <button class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600 transition">
-                    <?= e_about('cta_button_text', 'Get Started') ?>
-                </button>
-            </div>
-        </div>
-    </nav>
 
+<?php
+include 'main_header.php';
+include 'header.php';
+?>
     <!-- About Section -->
     <section class="py-16 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
@@ -167,46 +142,6 @@ function e_about($field, $default = '') {
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-400 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <h4 class="text-white font-semibold mb-4">Company</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-white transition">About</a></li>
-                        <li><a href="#" class="hover:text-white transition">Blog</a></li>
-                        <li><a href="#" class="hover:text-white transition">Careers</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-4">Product</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-white transition">Features</a></li>
-                        <li><a href="#" class="hover:text-white transition">Pricing</a></li>
-                        <li><a href="#" class="hover:text-white transition">Security</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-4">Support</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-white transition">Help Center</a></li>
-                        <li><a href="#" class="hover:text-white transition">Contact</a></li>
-                        <li><a href="#" class="hover:text-white transition">FAQ</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-4">Legal</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-white transition">Privacy</a></li>
-                        <li><a href="#" class="hover:text-white transition">Terms</a></li>
-                        <li><a href="#" class="hover:text-white transition">Cookie</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 pt-8 text-center">
-                <p>&copy; 2025 Acctglobe. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+<?php
+include 'footer.php';
+?>

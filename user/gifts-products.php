@@ -4,7 +4,7 @@ require_once "../flash.php";
 
 // Redirect if user not logged in
 if (!isset($_SESSION['user'])) {
-    set_flash("error", "You must be logged in to view products.");
+    set_flash("error", "You must be logged in to view gift products.");
     header("Location: ../login.php");
     exit;
 }
@@ -14,20 +14,20 @@ $flash = get_flash();
 
 // Fetch categories for the filter dropdown
 try {
-    $cat_stmt = $pdo->query("SELECT DISTINCT category FROM products WHERE product_name <> '' ORDER BY category ASC");
+    $cat_stmt = $pdo->query("SELECT DISTINCT category FROM gift_products WHERE name <> '' ORDER BY category ASC");
     $categories = $cat_stmt->fetchAll(PDO::FETCH_COLUMN);
 } catch (Exception $e) {
     $categories = [];
 }
 
 // Base query for fetching products
-$sql = "SELECT * FROM products WHERE product_name <> '' AND id > 0";
+$sql = "SELECT * FROM gift_products WHERE name <> '' AND id > 0 AND stock > 0";
 $params = [];
 
 // Handle search term
 $search = trim($_GET['search'] ?? '');
 if ($search) {
-    $sql .= " AND product_name LIKE ?";
+    $sql .= " AND name LIKE ?";
     $params[] = "%$search%";
 }
 
@@ -44,9 +44,9 @@ $products_per_page = 10;
 $offset = ($page - 1) * $products_per_page;
 
 // Count total products for pagination
-$count_sql = "SELECT COUNT(*) FROM products WHERE product_name <> '' AND id > 0";
+$count_sql = "SELECT COUNT(*) FROM gift_products WHERE name <> '' AND id > 0 AND stock > 0";
 if ($search) {
-    $count_sql .= " AND product_name LIKE ?";
+    $count_sql .= " AND name LIKE ?";
 }
 if ($category_filter) {
     $count_sql .= " AND category = ?";
@@ -56,7 +56,6 @@ $count_stmt = $pdo->prepare($count_sql);
 $count_stmt->execute(array_slice($params, 0)); // Use the same params as the main query
 $total_products = (int)$count_stmt->fetchColumn();
 $total_pages = ceil($total_products / $products_per_page);
-
 
 $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
 
@@ -70,13 +69,13 @@ try {
     // Bind pagination params
     $stmt->bindValue(':limit', $products_per_page, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
+    
     $stmt->execute();
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
     $products = [];
-    set_flash("error", "Could not load products.");
+    set_flash("error", "Could not load gift products.");
 }
 ?>
 <?php
@@ -86,7 +85,7 @@ require_once "header.php";
 
     <!-- Main Content -->
     <!-- Category and Search -->
-        <form method="GET" action="products.php">
+        <form method="GET" action="gifts-products.php">
             <div class="flex flex-col md:flex-row gap-4 mb-8">
                 <select name="category" onchange="this.form.submit()" class="bg-white border border-gray-300 px-4 py-2 rounded focus:outline-none focus:border-orange-500">
                     <option value="">All Categories</option>
@@ -97,16 +96,16 @@ require_once "header.php";
                     <?php endforeach; ?>
                 </select>
                 <div class="flex-1 flex gap-2">
-                    <input type="text" name="search" placeholder="Search products..." value="<?= htmlspecialchars($search) ?>" class="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500">
+                    <input type="text" name="search" placeholder="Search gift products..." value="<?= htmlspecialchars($search) ?>" class="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-orange-500">
                     <button type="submit" class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600">🔍</button>
                 </div>
             </div>
         </form>
 
-        <form action="process-order.php" method="POST">
+        <form action="process-gift-order.php" method="POST">
             <!-- Selected Products Section -->
             <div class="bg-white rounded-lg shadow-sm p-6 mb-8 sticky top-20 z-10">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Selected Products</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Selected Gift Products</h3>
                 <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
                     <p class="text-gray-600">Total Products: <span id="total-products" class="font-bold">0</span></p>
                     <p class="text-gray-600">Total Price: <span id="total-price" class="font-bold">₦0.00</span></p>
@@ -121,15 +120,15 @@ require_once "header.php";
                 <?php if (empty($products)): ?>
                     <div class="text-center py-16 text-gray-500">
                         <p class="text-2xl">😕</p>
-                        <p>No products found matching your criteria.</p>
+                        <p>No gift products found matching your criteria.</p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($products as $product): ?>
                         <div class="bg-white rounded-lg shadow-sm p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                             <div class="flex items-center gap-4">
-                                <img src="../uploads/<?= htmlspecialchars($product['image'] ?? 'placeholder.png') ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" class="w-16 h-16 rounded-lg object-cover border">
+                                <img src="../uploads/<?= htmlspecialchars($product['image'] ?? 'placeholder.png') ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="w-16 h-16 rounded-lg object-cover border">
                                 <div>
-                                    <h4 class="font-bold text-gray-800"><?= htmlspecialchars($product['product_name']) ?></h4>
+                                    <h4 class="font-bold text-gray-800"><?= htmlspecialchars($product['name']) ?></h4>
                                     <p class="text-gray-600 text-sm">Price: <span class="font-semibold">₦<?= number_format($product['price'], 2) ?></span></p>
                                 </div>
                             </div>
@@ -151,7 +150,7 @@ require_once "header.php";
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-            
+
             <!-- Pagination -->
             <div class="mt-8 flex justify-center items-center space-x-2">
                 <?php if ($page > 1): ?>

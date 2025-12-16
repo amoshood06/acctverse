@@ -98,8 +98,13 @@ try {
     $headers .= "From: noreply@acctverse.com\r\n";
     mail($user_email, $subject, $message, $headers);
 
+
     // If all steps are successful, commit the transaction
     $pdo->commit();
+
+    // Store product details in session to display on success page
+    $_SESSION['purchased_product_details'] = $product['admin_note'];
+    $_SESSION['purchased_product_name'] = $product['product_name'];
 
     // Redirect to success page
     header("Location: order-success.php?order_id=" . $order_id);

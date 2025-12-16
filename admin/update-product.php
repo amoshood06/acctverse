@@ -20,7 +20,6 @@ $price         = trim($_POST['price']);
 $category      = trim($_POST['category']);
 $description   = trim($_POST['description']); // Assuming description is always provided
 $sub_category  = trim($_POST['sub_category'] ?? ''); // Now directly getting the sub-category name
-$stock         = filter_input(INPUT_POST, 'stock', FILTER_VALIDATE_INT, ["options" => ["default" => 0]]); // Assuming stock is always provided
 $admin_note    = trim($_POST['admin_note'] ?? '');
 
 // Fetch main category name
@@ -71,12 +70,12 @@ if (!empty($_FILES["image"]["name"])) {
 try {
     $update = $pdo->prepare("
         UPDATE products
-        SET product_name=?, price=?, description=?, category=?, sub_category=?, stock=?, image=?, admin_note=?
+        SET product_name=?, price=?, description=?, category=?, sub_category=?, image=?, admin_note=?
         WHERE id=?
     ");
 
     $update->execute([
-        $name, $price, $description, $main_category_name, $sub_category, $stock, $imageName, $admin_note, $id
+        $name, $price, $description, $main_category_name, $sub_category, $imageName, $admin_note, $id
     ]);
 
     set_flash("success", "Product updated successfully!");

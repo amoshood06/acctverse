@@ -16,16 +16,35 @@ $flash = get_flash();
 $stmt = $pdo->query("SELECT * FROM sms_services WHERE is_active = 1 AND available_credits > 0 ORDER BY country, service_name");
 $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch latest user orders
+// Count total orders for pagination
+$countStmt = $pdo->prepare("SELECT COUNT(*) FROM sms_orders WHERE user_id = :user_id");
+$countStmt->execute([':user_id' => $user_id]);
+$total_orders = $countStmt->fetchColumn();
+
+$orders_per_page = 10;
+$total_pages = ceil($total_orders / $orders_per_page);
+$current_page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($current_page < 1) {
+    $current_page = 1;
+} elseif ($current_page > $total_pages && $total_pages > 0) {
+    $current_page = $total_pages;
+}
+
+$offset = ($current_page - 1) * $orders_per_page;
+
+// Fetch latest user orders with pagination
 $orderStmt = $pdo->prepare("
     SELECT o.*, s.service_name 
     FROM sms_orders o
     JOIN sms_services s ON o.service_id = s.id
-    WHERE o.user_id = ? 
+    WHERE o.user_id = :user_id
     ORDER BY o.created_at DESC 
-    LIMIT 10
+    LIMIT :limit OFFSET :offset
 ");
-$orderStmt->execute([$user_id]);
+$orderStmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+$orderStmt->bindValue(':limit', $orders_per_page, PDO::PARAM_INT);
+$orderStmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$orderStmt->execute();
 $orders = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <?php
@@ -39,7 +58,7 @@ require_once "header.php";
             <h1 class="text-3xl font-bold text-blue-900 text-center mb-2">Choose Your Service</h1>
             <p class="text-center text-gray-500 mb-8">Select a service to get a verification code instantly.</p>
 
-            <form action="process-sms-order.php" method="POST" class="space-y-8">
+            <form id="purchase-form" action="process-sms-order.php" method="POST" class="space-y-8">
                 <input type="hidden" name="user_id" value="<?= $user_id; ?>">
                 <div>
                     <label class="block text-sm font-semibold text-blue-900 mb-2 flex items-center gap-2">
@@ -49,7 +68,7 @@ require_once "header.php";
                     <?php if (empty($services)): ?>
                         <p class="text-gray-600 p-4 bg-gray-100 rounded">No SMS services are available at the moment.</p>
                     <?php else: ?>
-                        <select name="service_id" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-orange-500 bg-white" required>
+                        <select id="service-select" name="service_id" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-orange-500 bg-white" required>
                             <option value="">-- Select a Service --</option>
                             <?php foreach ($services as $service): ?>
                                 <option value="<?= $service['id'] ?>">
@@ -62,7 +81,7 @@ require_once "header.php";
                 </div>
 
                 <?php if (!empty($services)): ?>
-                    <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition flex items-center justify-center gap-2">
+                    <button id="purchase-button" type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
                         🛒 Purchase
                     </button>
                 <?php endif; ?>
@@ -80,25 +99,25 @@ require_once "header.php";
                     <thead class="bg-blue-900 text-white">
                         <tr>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Service</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold">Phone Number</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold">Code</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold hidden md:table-cell">Phone Number</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold hidden md:table-cell">Code</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Amount</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Date</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="orders-tbody">
                         <?php if (empty($orders)): ?>
-                            <tr class="border-b border-gray-200">
+                            <tr id="no-orders-row" class="border-b border-gray-200">
                                 <td colspan="7" class="px-4 py-8 text-center text-gray-500">No Order Available</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($orders as $order): ?>
                                 <tr class="border-b border-gray-200">
                                     <td class="px-4 py-3"><?= htmlspecialchars($order['service_name']) ?></td>
-                                    <td class="px-4 py-3 font-mono"><?= htmlspecialchars($order['phone_number_received'] ?? 'N/A') ?></td>
-                                    <td class="px-4 py-3 font-mono font-bold"><?= htmlspecialchars($order['sms_code'] ?? 'N/A') ?></td>
+                                    <td class="px-4 py-3 font-mono hidden md:table-cell"><?= htmlspecialchars($order['phone_number_received'] ?? 'N/A') ?></td>
+                                    <td class="px-4 py-3 font-mono font-bold hidden md:table-cell"><?= htmlspecialchars($order['sms_code'] ?? 'N/A') ?></td>
                                     <td class="px-4 py-3">₦<?= number_format($order['total_cost'], 2) ?></td>
                                     <td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800"><?= htmlspecialchars($order['status']) ?></span></td>
                                     <td class="px-4 py-3 text-sm text-gray-500"><?= date("d M, Y H:i", strtotime($order['created_at'])) ?></td>
@@ -113,6 +132,25 @@ require_once "header.php";
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <?php if ($total_pages > 1): ?>
+            <div class="mt-6 flex justify-center items-center">
+                <nav class="flex items-center space-x-2" aria-label="Pagination">
+                    <?php if ($current_page > 1): ?>
+                        <a href="?page=<?= $current_page - 1 ?>" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-100">Previous</a>
+                    <?php endif; ?>
+
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                        <a href="?page=<?= $i ?>" class="px-4 py-2 text-sm font-medium <?= $i == $current_page ? 'text-white bg-blue-900' : 'text-gray-700 bg-white' ?> rounded-md hover:bg-gray-100"><?= $i ?></a>
+                    <?php endfor; ?>
+
+                    <?php if ($current_page < $total_pages): ?>
+                        <a href="?page=<?= $current_page + 1 ?>" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-100">Next</a>
+                    <?php endif; ?>
+                </nav>
+            </div>
+            <?php endif; ?>
 
             <p class="text-center text-gray-600 text-sm mt-6">No need to refresh the page to get the code. Click "<span class="bg-red-500 text-white px-2 py-1 rounded inline-block">X</span>" to cancel order.</p>
             <p class="text-center text-gray-600 text-sm">If your network is bad you may refresh.</p>
@@ -130,6 +168,35 @@ require_once "header.php";
     }).showToast();
     </script>
     <?php endif; ?>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const serviceSelect = document.getElementById('service-select');
+        const purchaseButton = document.getElementById('purchase-button');
+
+        // Don't run script if elements aren't on the page
+        if (!serviceSelect || !purchaseButton) {
+            return;
+        }
+
+        // Function to toggle button state
+        function toggleButtonState() {
+            if (serviceSelect.value) {
+                purchaseButton.disabled = false;
+                purchaseButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                purchaseButton.disabled = true;
+                purchaseButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Initial check on page load
+        toggleButtonState();
+
+        // Add event listener for changes
+        serviceSelect.addEventListener('change', toggleButtonState);
+    });
+    </script>
 </main>
 </body>
 </html>

@@ -1,15 +1,30 @@
 <?php
+require_once '../db/db.php';
 $current_page = basename($_SERVER['PHP_SELF']);
 
 $pages = [
     'index.php' => 'Dashboard',
     'products.php' => 'Products',
+    'gifts-products.php' => 'Gift Products',
     'order-history.php' => 'Orders',
     'sms-verification.php' => 'SMS Services',
     'referral.php' => 'Refer & Earn',
     'transactions.php' => 'Transactions',
     'profile.php' => 'Profile',
 ];
+
+// Fetch the site logo from settings
+$logo_path = '../assets/image/acctverse.png'; // Default logo
+try {
+    $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_name = 'site_logo'");
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result && !empty($result['setting_value'])) {
+        $logo_path = '../assets/image/' . htmlspecialchars($result['setting_value']);
+    }
+} catch (Exception $e) {
+    // On error, the default logo will be used. You could log the error here.
+}
 
 ?>
 <!DOCTYPE html>
@@ -20,8 +35,9 @@ $pages = [
     <title><?= isset($pages[$current_page]) ? $pages[$current_page] : 'User' ?> - Acctverse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <link rel="shortcut icon" href="assets/image/a.png" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= $logo_path ?>" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-gray-50" x-data="{ open: false }">
     <nav class="bg-white shadow-sm sticky top-0 z-20" @click.away="open = false">
@@ -29,7 +45,7 @@ $pages = [
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <a href="index.php" class="font-bold text-lg text-blue-900">
-                        <img src="assets/image/acctverse.png" alt="Acctverse" class="w-[150px]">
+                        <img src="<?= $logo_path ?>" alt="Acctverse" class="w-[150px]">
                     </a>
                 </div>
                 <!-- Desktop Menu -->

@@ -18,8 +18,21 @@ $user_id = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
 $service_id = filter_input(INPUT_POST, 'service_id', FILTER_VALIDATE_INT);
 $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT, ['options' => ['default' => 1, 'min_range' => 1]]);
 
-if (!$user_id || !$service_id || !$quantity || $user_id !== $_SESSION['user']['id']) {
-    set_flash("error", "Invalid order details. Please try again.");
+// More specific validation
+if (!$user_id || $user_id !== $_SESSION['user']['id']) {
+    set_flash("error", "Authentication error. Please log in and try again.");
+    header("Location: sms-verification.php");
+    exit;
+}
+
+if (!$service_id) {
+    set_flash("error", "You must select a service before purchasing.");
+    header("Location: sms-verification.php");
+    exit;
+}
+
+if (!$quantity) {
+    set_flash("error", "Invalid quantity specified. Please try again.");
     header("Location: sms-verification.php");
     exit;
 }
@@ -56,8 +69,32 @@ try {
     // 5. Create order record
     $stmt = $pdo->prepare("INSERT INTO sms_orders (user_id, service_id, quantity, cost_per_sms, total_cost, status) VALUES (?, ?, ?, ?, ?, 'Pending')");
     $stmt->execute([$user_id, $service_id, $quantity, $service['price_per_sms'], $total_cost]);
+    $order_id = $pdo->lastInsertId();
 
     $pdo->commit();
+
+    // Fetch the newly created order to return it in the AJAX response
+    $orderStmt = $pdo->prepare("
+        SELECT o.*, s.service_name 
+        FROM sms_orders o
+        JOIN sms_services s ON o.service_id = s.id
+        WHERE o.id = ?
+    ");
+    $orderStmt->execute([$order_id]);
+    $newOrder = $orderStmt->fetch(PDO::FETCH_ASSOC);
+
+    // Handle AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'message' => 'Your order has been placed successfully!',
+            'order' => $newOrder
+        ]);
+        exit;
+    }
+
+    // Fallback for non-AJAX requests
     set_flash("success", "Your order has been placed successfully! Your number will appear in the 'Latest Orders' table shortly.");
     header("Location: sms-verification.php#latest-orders");
 
@@ -65,6 +102,19 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
+    
+    // Handle AJAX request error
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => "Order failed: " . $e->getMessage()
+        ]);
+        exit;
+    }
+
+    // Fallback for non-AJAX requests
     set_flash("error", "Order failed: " . $e->getMessage());
     header("Location: sms-verification.php");
 }

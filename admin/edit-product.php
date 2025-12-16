@@ -81,9 +81,6 @@ if ($stmt_cat) {
         <label class="block font-semibold mt-3">Description</label>
         <textarea name="description" class="w-full border rounded p-2" required><?= htmlspecialchars($product['description']); ?></textarea>
 
-        <label class="block font-semibold mt-3">Stock</label>
-        <input type="number" name="stock" class="w-full border rounded p-2" value="<?= $product['stock']; ?>" required>
-
         <label class="block font-semibold mt-3">Admin Note (e.g. Account Details)</label>
         <textarea name="admin_note" class="w-full border rounded p-2"><?= htmlspecialchars($product['admin_note'] ?? ''); ?></textarea>
 

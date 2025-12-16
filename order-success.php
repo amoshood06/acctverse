@@ -9,37 +9,20 @@ if (!isset($_SESSION['user']['id'])) {
     exit();
 }
 
-// Get order ID from URL
-$order_id = filter_input(INPUT_GET, 'order_id', FILTER_VALIDATE_INT);
-if (!$order_id) {
-    set_flash("error", "Invalid order ID.");
+// Check for purchased product details in session
+$purchased_products = null;
+if (isset($_SESSION['purchased_products']) && is_array($_SESSION['purchased_products'])) {
+    $purchased_products = $_SESSION['purchased_products'];
+    // Unset session variables so they don't show again
+    unset($_SESSION['purchased_products']);
+} else {
+    // If there are no purchased products in the session, redirect
+    set_flash("error", "No recent order details to display.");
     header("Location: ./user/order-history.php");
     exit();
 }
 
 $user_id = $_SESSION['user']['id'];
-
-try {
-    // Fetch order details
-    $stmt = $pdo->prepare("
-        SELECT 
-            id, total_amount, quantity, created_at, product_name, image
-        FROM orders o
-        WHERE id = ? AND user_id = ?
-    ");
-    $stmt->execute([$order_id, $user_id]);
-    $order = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$order) {
-        set_flash("error", "Order not found or you do not have permission to view it.");
-        header("Location: ./user/order-history.php");
-        exit();
-    }
-} catch (Exception $e) {
-    set_flash("error", "An error occurred while fetching your order details.");
-    header("Location: ./user/order-history.php");
-    exit();
-}
 
 include 'main_header.php';
 include 'header.php';
@@ -61,28 +44,26 @@ include 'header.php';
                 Thank you for your purchase. A confirmation email has been sent to you with the order details.
             </p>
 
-            <!-- Order Summary -->
-            <div class="border-t border-b border-gray-200 py-6 my-6 text-left">
-                <h2 class="text-xl font-semibold text-blue-900 mb-4">Order Summary</h2>
-                <div class="flex items-center gap-4">                    <img src="uploads/<?= htmlspecialchars($order['image']) ?>" alt="<?= htmlspecialchars($order['product_name']) ?>" class="w-20 h-20 object-cover rounded-lg">
-                    <div class="flex-grow">
-                        <p class="font-semibold text-gray-800"><?= htmlspecialchars($order['product_name']) ?></p>
-                        <p class="text-sm text-gray-500">Quantity: <?= htmlspecialchars($order['quantity']) ?></p>
+            <?php if (!empty($purchased_products)): ?>
+            <!-- Purchased Account Details -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 text-left p-6 rounded-lg my-6">
+                <h3 class="text-xl font-bold text-blue-900 mb-3">Your Purchased Account Details</h3>
+                <?php foreach ($purchased_products as $product): ?>
+                <div class="mb-6 pb-4 border-b border-blue-200 last:border-b-0">
+                    <h4 class="font-semibold text-lg text-blue-800">"<?= htmlspecialchars($product['name']) ?>"</h4>
+                    <div class="bg-gray-100 p-4 rounded-md mt-2">
+                        <pre class="whitespace-pre-wrap text-sm text-gray-800"><?= htmlspecialchars($product['details']) ?></pre>
                     </div>
-                    <p class="font-bold text-lg text-blue-900">₦<?= number_format($order['total_amount'], 2) ?></p>
                 </div>
-                <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between text-sm">
-                    <span class="text-gray-500">Order ID:</span>
-                    <span class="font-mono text-gray-700">#<?= htmlspecialchars($order['id']) ?></span>
-                </div>
-                <div class="mt-2 flex justify-between text-sm">
-                    <span class="text-gray-500">Date:</span>
-                    <span class="text-gray-700"><?= date("F j, Y, g:i a", strtotime($order['created_at'])) ?></span>
-                </div>
+                <?php endforeach; ?>
+                <p class="text-sm text-red-600 mt-4 font-semibold">
+                    <strong>Important:</strong> Please save these details immediately. They will not be shown again.
+                </p>
             </div>
+            <?php endif; ?>
 
             <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
                 <a href="products.php" class="w-full sm:w-auto bg-orange-500 text-white px-8 py-3 rounded font-semibold hover:bg-orange-600 transition">
                     Continue Shopping
                 </a>

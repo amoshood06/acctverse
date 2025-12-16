@@ -78,10 +78,10 @@ require_once "header.php";
                     <!-- Table Header -->
                     <thead>
                         <tr class="bg-blue-900 text-white">
-                            <th class="px-4 py-4 text-left text-sm font-semibold">Transaction</th>
+                            <th class="hidden md:table-cell px-4 py-4 text-left text-sm font-semibold">Transaction</th>
                             <th class="px-4 py-4 text-left text-sm font-semibold">Ordered At</th>
                             <th class="px-4 py-4 text-left text-sm font-semibold">Amount</th>
-                            <th class="px-4 py-4 text-left text-sm font-semibold">Quantity</th>
+                            <th class="hidden md:table-cell px-4 py-4 text-left text-sm font-semibold">Quantity</th>
                             <th class="px-4 py-4 text-left text-sm font-semibold">Status</th>
                             <th class="px-4 py-4 text-left text-sm font-semibold">Details</th>
                         </tr>
@@ -95,10 +95,10 @@ require_once "header.php";
                         <?php else: ?>
                             <?php foreach ($orders as $order): ?>
                                 <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                    <td class="px-4 py-3 font-mono text-sm text-gray-700">#<?= htmlspecialchars($order['id']); ?></td>
+                                    <td class="hidden md:table-cell px-4 py-3 font-mono text-sm text-gray-700">#<?= htmlspecialchars($order['id']); ?></td>
                                     <td class="px-4 py-3 text-sm text-gray-600"><?= date("M d, Y, h:i A", strtotime($order['created_at'])); ?></td>
                                     <td class="px-4 py-3 font-semibold">₦<?= number_format($order['total_amount'], 2); ?></td>
-                                    <td class="px-4 py-3 text-center"><?= htmlspecialchars($order['quantity']); ?></td>
+                                    <td class="hidden md:table-cell px-4 py-3 text-center"><?= htmlspecialchars($order['quantity']); ?></td>
                                     <td class="px-4 py-3">
                                         <span class="px-2 py-1 text-xs rounded-full 
                                             <?= $order['status'] === 'completed' ? 'bg-green-100 text-green-800' : ($order['status'] === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') ?>">
@@ -108,7 +108,7 @@ require_once "header.php";
                                     <td class="px-4 py-3 text-sm text-gray-800">
                                         <?= htmlspecialchars($order['product_name']); ?>
                                         <?php if (!empty($order['admin_note'])): ?>
-                                            <button onclick="alert('Admin Note: \n\n<?= htmlspecialchars(addslashes($order['admin_note'])) ?>')" class="ml-2 bg-blue-100 text-blue-700 px-2 py-1 text-xs rounded hover:bg-blue-200">View Note</button>
+                                            <button type="button" data-note="<?= htmlspecialchars($order['admin_note']) ?>" onclick="showNoteModal(this)" class="ml-2 bg-blue-100 text-blue-700 px-2 py-1 text-xs rounded hover:bg-blue-200">View Note</button>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -143,6 +143,47 @@ require_once "header.php";
         <?php endif; ?>
 
     </div>
+
+    <!-- Admin Note Modal -->
+    <div id="noteModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 md:w-1/3">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-xl font-bold text-gray-800">Admin Note</h3>
+                <button id="closeNoteModal" class="text-2xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="noteModalContent" class="text-gray-700 whitespace-pre-wrap break-words">
+                <!-- Note content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function showNoteModal(button) {
+        const note = button.getAttribute('data-note');
+        document.getElementById('noteModalContent').innerText = note;
+        document.getElementById('noteModal').classList.remove('hidden');
+    }
+
+    function closeNoteModal() {
+        document.getElementById('noteModal').classList.add('hidden');
+    }
+
+    document.getElementById('closeNoteModal').addEventListener('click', closeNoteModal);
+
+    // Also close modal if clicking on the background overlay
+    document.getElementById('noteModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeNoteModal();
+        }
+    });
+    
+    // Close modal on escape key press
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape" && !document.getElementById('noteModal').classList.contains('hidden')) {
+            closeNoteModal();
+        }
+    });
+    </script>
 </main>
 </body>
 </html>

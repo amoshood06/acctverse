@@ -106,15 +106,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     Stock: <?= intval($product['stock']) ?>
                 </p>
 
-                <!-- Buy Button -->
-                <form action="buy-product.php" method="POST" class="mt-auto">
-                    <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+                <!-- View Details Button -->
+                <a href="product-details.php?id=<?= $product['id'] ?>" class="mt-auto">
                     <button 
                         class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
                     >
-                        Buy Now
+                        View Details
                     </button>
-                </form>
+                </a>
             </div>
 
             <?php endforeach; ?>

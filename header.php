@@ -1,6 +1,11 @@
 
 <?php
+session_start();
 include './db/db.php';
+
+// Check if the user is logged in
+$isLoggedIn = isset($_SESSION['user']);
+
 // Fetch the site logo from settings
 $logo_path = 'assets/image/acctverse.png'; // Default logo
 try {
@@ -69,9 +74,9 @@ try {
           <div class="mt-2 pt-2">
             <a href="index" class="block px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Home</a>
             <a href="about-us" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">About</a>
-            <a href="<?php echo $isLoggedIn ? './user/order-history' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Orders</a>
-            <a href="<?php echo $isLoggedIn ? './user/product' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Product</a>
-            <a href="<?php echo $isLoggedIn ? './user/sms-verification' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SMS Verification</a>
+            <a href="<?php echo $isLoggedIn ? './user/order-history.php' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Orders</a>
+            <a href="<?php echo $isLoggedIn ? './user/product.php' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Product</a>
+            <a href="<?php echo $isLoggedIn ? './user/sms-verification.php' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">SMS Verification</a>
             <a href="<?php echo $isLoggedIn ? '' : 'login'; ?>" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Add Fund</a>
             <a href="gift.php" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Gift Delivery</a>
             <a href="" class="block border-t border-gray-100 px-4 py-2 text-sm text-[#001957] hover:bg-gray-100">Contact</a>
@@ -79,12 +84,12 @@ try {
           <!-- auth buttons -->
           <div class="mb-2 border-t border-gray-100">
             <?php if(!$isLoggedIn): ?>
-            <a href="login" class="block w-full text-center px-3 py-2 mb-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold">Login</a>
-            <a href="register" class="block w-full text-center px-3 py-2 bg-orange-500 hover:bg-green-600 text-white rounded font-semibold">Register</a>
+            <a href="login.php" class="block w-full text-center px-3 py-2 mb-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold">Login</a>
+            <a href="register.php" class="block w-full text-center px-3 py-2 bg-orange-500 hover:bg-green-600 text-white rounded font-semibold">Register</a>
             <?php else: ?>
-            <a href="./user/index" class="block w-full text-center px-3 py-2 mb-2 bg-blue-500 hover:bg-blue-600 text-white rounded font-semibold">Dashboard</a>
-            <a href="./user/profile" class="block w-full text-center px-3 py-2 mb-2 bg-purple-500 hover:bg-purple-600 text-white rounded font-semibold">Profile</a>
-            <a href="logout" class="block w-full text-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold">Logout</a>
+            <a href="./user/index.php" class="block w-full text-center px-3 py-2 mb-2 bg-blue-500 hover:bg-blue-600 text-white rounded font-semibold">Dashboard</a>
+            <a href="./user/profile.php" class="block w-full text-center px-3 py-2 mb-2 bg-purple-500 hover:bg-purple-600 text-white rounded font-semibold">Profile</a>
+            <a href="logout.php" class="block w-full text-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded font-semibold">Logout</a>
             <?php endif; ?>
           </div>
         </div>
@@ -137,11 +142,11 @@ try {
 
   <!-- main Menu-->
     <div class="hidden md:flex text-[#001957] gap-[20px] font-bold justify-center items-center py-4 nav_menu">
-      <a href="index">Home</a>
-      <a href="about-us">About</a>
-      <a href="./user/order-history">Orders</a>
-       <a href="./user/product">Product</a>
-      <a href="./user/sms-verification">SMS Verification</a>
+      <a href="index.php">Home</a>
+      <a href="about-us.php">About</a>
+      <a href="./user/order-history.php">Orders</a>
+       <a href="./user/products.php">Product</a>
+      <a href="./user/sms-verification.php">SMS Verification</a>
       <a href="">Add Fund</a>
       <a href="gift.php">Gift Delivery</a>
       <a href="help-center.php">Contact</a>

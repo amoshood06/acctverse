@@ -10,10 +10,10 @@ $flash = get_flash();
 //  Fetch Statistics
 // ==================================================
 try {
-    $totalOrders = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
-    $pendingOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'pending'")->fetchColumn();
-    $completedOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'completed'")->fetchColumn();
-    $cancelledOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'cancelled'")->fetchColumn();
+    $totalOrders = $pdo->query("SELECT COUNT(*) FROM sms_orders")->fetchColumn();
+    $pendingOrders = $pdo->query("SELECT COUNT(*) FROM sms_orders WHERE status = 'pending'")->fetchColumn();
+    $completedOrders = $pdo->query("SELECT COUNT(*) FROM sms_orders WHERE status = 'completed'")->fetchColumn();
+    $cancelledOrders = $pdo->query("SELECT COUNT(*) FROM sms_orders WHERE status = 'cancelled'")->fetchColumn();
 } catch (Exception $e) {
     $totalOrders = $pendingOrders = $completedOrders = $cancelledOrders = 0;
     set_flash("error", "Could not load order statistics.");
@@ -24,13 +24,12 @@ try {
 // ==================================================
 $sql = "
     SELECT 
-        o.id, o.total_amount, o.status, o.created_at, o.admin_note,
-        o.product_name,
-        p.category,
+        o.id, o.quantity, o.total_cost, o.status, o.created_at,
+        s.name as service_name,
         u.first_name, u.last_name
-    FROM orders o
+    FROM sms_orders o
     JOIN users u ON o.user_id = u.id
-    LEFT JOIN products p ON o.product_id = p.id
+    LEFT JOIN sms_services s ON o.service_id = s.id
 ";
 
 $params = [];
@@ -69,14 +68,14 @@ try {
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     $orders = [];
-    set_flash("error", "Could not retrieve orders.");
+    set_flash("error", "Could not retrieve SMS orders.");
 }
 
 ?>
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold text-blue-900 mb-8">Product Order Management</h1>
+        <h1 class="text-3xl font-bold text-blue-900 mb-8">SMS Order Management</h1>
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -100,7 +99,7 @@ try {
 
         <!-- Filters -->
         <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <form method="GET" action="admin-orders.php">
+            <form method="GET" action="admin-sms-orders.php">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <input type="text" name="order_id" placeholder="Order ID..." value="<?= htmlspecialchars($order_id) ?>" class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-orange-500">
                     <select name="status" class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:border-orange-500">
@@ -123,28 +122,29 @@ try {
                         <tr>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Order ID</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">User</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold">Product</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Service</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Quantity</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Amount</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Date</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold">Details / Note</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($orders)): ?>
                             <tr>
-                                <td colspan="8" class="text-center py-10 text-gray-500">No orders found.</td>
+                                <td colspan="8" class="text-center py-10 text-gray-500">No SMS orders found.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($orders as $order): ?>
                                 <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                    <form action="update-order-status.php" method="POST">
+                                    <form action="update-sms-order-status.php" method="POST">
                                         <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
                                         <td class="px-4 py-3 font-mono">#<?= htmlspecialchars($order['id']) ?></td>
                                         <td class="px-4 py-3"><?= htmlspecialchars($order['first_name'] . ' ' . $order['last_name']) ?></td>
-                                        <td class="px-4 py-3"><?= htmlspecialchars($order['product_name']) ?></td>
-                                        <td class="px-4 py-3 font-semibold">₦<?= number_format($order['total_amount'], 2) ?></td>
+                                        <td class="px-4 py-3"><?= htmlspecialchars($order['service_name']) ?></td>
+                                        <td class="px-4 py-3"><?= htmlspecialchars($order['quantity']) ?></td>
+                                        <td class="px-4 py-3 font-semibold">₦<?= number_format($order['total_cost'], 2) ?></td>
                                         <td class="px-4 py-3 text-gray-500"><?= date("M d, Y", strtotime($order['created_at'])) ?></td>
                                         <td class="px-4 py-3">
                                             <select name="status" class="text-xs border border-gray-300 rounded p-1">
@@ -152,27 +152,6 @@ try {
                                                 <option value="completed" <?= $order['status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
                                                 <option value="cancelled" <?= $order['status'] === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
                                             </select>
-                                        </td>
-                                        <td class="px-4 py-3 text-xs">
-                                            <?php
-                                            $note = $order['admin_note'];
-                                            $recipient_details = json_decode($note);
-
-                                            // Check if category is 'Gifts' and if admin_note is valid JSON
-                                            if (isset($order['category']) && $order['category'] === 'Gifts' && $recipient_details !== null) {
-                                                echo '<strong>Recipient:</strong> ' . htmlspecialchars($recipient_details->recipient_name) . '<br>';
-                                                echo '<strong>Phone:</strong> ' . htmlspecialchars($recipient_details->recipient_phone) . '<br>';
-                                                echo '<strong>Address:</strong> ' . htmlspecialchars($recipient_details->recipient_address) . '<br>';
-                                                if (!empty($recipient_details->gift_message)) {
-                                                    echo '<strong>Message:</strong> ' . htmlspecialchars($recipient_details->gift_message);
-                                                }
-                                            } else {
-                                                // For other products, or if note is not JSON, show the input
-                                            ?>
-                                                <input type="text" name="admin_note" placeholder="Add a note..." value="<?= htmlspecialchars($note ?? '') ?>" class="w-full border-gray-200 rounded p-1 text-xs focus:outline-none focus:border-orange-400">
-                                            <?php
-                                            }
-                                            ?>
                                         </td>
                                         <td class="px-4 py-3">
                                             <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">Update</button>
