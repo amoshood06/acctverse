@@ -101,7 +101,7 @@ Toastify({
                         <p class="text-gray-600 text-sm">Add Funds</p>
                         <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">💳</div>
                     </div>
-                    <h3 class="text-2xl font-bold text-blue-900">Fund Wallet</h3>
+                    <h3 class="text-2xl font-bold text-blue-900"><a href="fund.php">Fund Wallet</a></h3>
                 </div>
             </div>
 
@@ -165,10 +165,7 @@ Toastify({
 
         <!-- Latest Payments History -->
         <div class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-2xl font-bold text-blue-900 mb-6">Latest Payments History</h2>
-            <button class="w-full bg-gradient-to-r from-purple-600 to-orange-500 text-white py-3 rounded font-bold mb-6 hover:opacity-90">
-                Click here to see Enkpay Fund History
-            </button>
+            <h2 class="text-2xl font-bold text-blue-900 mb-6">Latest Monnify Transactions</h2>
             
             <!-- Table -->
             <div class="overflow-x-auto">
@@ -176,16 +173,47 @@ Toastify({
                     <thead class="bg-red-500 text-white">
                         <tr>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Gateway | Trx</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold">Paid at</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Amount</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold">Admin feedback</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border-b border-gray-200">
-                            <td colspan="5" class="px-4 py-8 text-center text-gray-500">Data not found</td>
-                        </tr>
+                        <?php
+                        $monnifyTransactions = [];
+                        try {
+                            $transStmt = $pdo->prepare("SELECT payment_gateway, transaction_reference, amount, status, created_at FROM transactions WHERE user_id = ? AND payment_gateway = 'Monnify' ORDER BY created_at DESC LIMIT 10");
+                            $transStmt->execute([$user['id']]);
+                            $monnifyTransactions = $transStmt->fetchAll(PDO::FETCH_ASSOC);
+                        } catch (Exception $e) {
+                            // Log error, but don't show sensitive info to user
+                            error_log("Error fetching Monnify transactions: " . $e->getMessage());
+                        }
+
+                        if (empty($monnifyTransactions)): ?>
+                            <tr class="border-b border-gray-200">
+                                <td colspan="4" class="px-4 py-8 text-center text-gray-500">No Monnify transactions found.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($monnifyTransactions as $transaction): ?>
+                                <tr class="border-b border-gray-200">
+                                    <td class="px-4 py-3 text-sm text-gray-800"><?= htmlspecialchars($transaction['payment_gateway']); ?> | <?= htmlspecialchars($transaction['transaction_reference']); ?></td>
+                                    <td class="px-4 py-3 text-sm text-gray-800">₦<?= number_format($transaction['amount'], 2); ?></td>
+                                    <td class="px-4 py-3 text-sm text-gray-800">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                            <?php 
+                                                if ($transaction['status'] == 'completed') echo 'bg-green-100 text-green-800';
+                                                else if ($transaction['status'] == 'pending') echo 'bg-yellow-100 text-yellow-800';
+                                                else if ($transaction['status'] == 'failed') echo 'bg-red-100 text-red-800';
+                                                else echo 'bg-gray-100 text-gray-800';
+                                            ?>">
+                                            <?= ucfirst(htmlspecialchars($transaction['status'])); ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-800"><?= date('M d, Y H:i', strtotime($transaction['created_at'])); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
