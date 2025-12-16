@@ -1,22 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Policy - AcctGlobe</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-orange-500 rounded-full"></div>
-                <span class="font-bold text-lg">Acctvarse</span>
-            </div>
-            <a href="dashboard.html" class="text-orange-500 hover:text-orange-600">Back to Dashboard</a>
-        </div>
-    </nav>
+<?php
+include 'main_header.php';
+include 'header.php';
+?>
 
     <!-- Hero -->
     <div class="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-12">
