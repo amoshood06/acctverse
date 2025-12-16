@@ -93,10 +93,6 @@ include 'header.php';
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-400 py-8 mt-16">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm">
-            <p>&copy; 2025 AcctGlobe. All rights reserved.</p>
-        </div>
-    </footer>
-</body>
-</html>
+ <?php
+ include 'footer.php';
+    ?>
