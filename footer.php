@@ -4,10 +4,12 @@
    <p>© Copyright 2025 . All rights reserved.</p>
   </div>
   <div class="footer_section_two flex gap-[30px]">
-    <a href="">Privacy Policy</a>
-    <a href="">Rules</a>
-    <a href="">Terms and conditions</a>
-    <a href="">FAQs</a>
+    <a href="privacy.php">Privacy Policy</a>
+    <a href="terms.php">Terms and conditions</a>
+    <a href="faq.php">FAQs</a>
+    <a href="about-us.php">About Us</a>
+    <a href="help-center.php">Help Center</a>
+    <a href="cookie-policy.php">Cookie Policy</a>
   </div>
 </div>
 
