@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../db/db.php'; // Assumes db.php is in the root db folder
 
-// Fetch slider images from the database
-$stmt = $pdo->query("SELECT image_path, alt_text FROM sliders ORDER BY created_at DESC");
+// Fetch active gift sliders from the database
+$stmt = $pdo->query("SELECT image_url, title, description, link FROM gift_sliders WHERE status = 'active' ORDER BY order_num ASC, created_at DESC");
 $slides_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <div class="slider-container relative w-full">
@@ -10,10 +10,28 @@ $slides_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		<div class="slider-track flex">
 			<?php if (!empty($slides_data)): ?>
 				<?php foreach ($slides_data as $slide): ?>
-					<div class="slide flex-shrink-0 w-full"><img src="<?= htmlspecialchars(str_replace('../', '', $slide['image_path'])) ?>" alt="<?= htmlspecialchars($slide['alt_text']) ?>" class="w-full object-cover"/></div>
+					<div class="slide flex-shrink-0 w-full">
+						<?php if (!empty($slide['link'])): ?>
+							<a href="<?= htmlspecialchars($slide['link']) ?>">
+						<?php endif; ?>
+						<img src="<?= htmlspecialchars('../' . $slide['image_url']) ?>" alt="<?= htmlspecialchars($slide['title'] ?? 'Gift Slider Image') ?>" class="w-full object-cover"/>
+						<?php if (!empty($slide['title']) || !empty($slide['description'])): ?>
+							<div class="slider-caption absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
+								<?php if (!empty($slide['title'])): ?>
+									<h3 class="text-lg font-bold"><?= htmlspecialchars($slide['title']) ?></h3>
+								<?php endif; ?>
+								<?php if (!empty($slide['description'])): ?>
+									<p class="text-sm"><?= htmlspecialchars($slide['description']) ?></p>
+								<?php endif; ?>
+							</div>
+						<?php endif; ?>
+						<?php if (!empty($slide['link'])): ?>
+							</a>
+						<?php endif; ?>
+					</div>
 				<?php endforeach; ?>
 			<?php else: ?>
-				<div class="slide flex-shrink-0 w-full"><img src="assets/image/sliders_1.png" alt="Default slider image" class="w-full object-cover"/></div>
+				<div class="slide flex-shrink-0 w-full"><img src="../assets/image/sliders_1.png" alt="Default slider image" class="w-full object-cover"/></div>
 			<?php endif; ?>
 		</div>
 	</div>

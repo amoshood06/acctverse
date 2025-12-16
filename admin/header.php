@@ -23,6 +23,7 @@ $pages = [
     'admin-transactions.php' => 'Transactions',
     'referral-settings.php' => 'Referral Settings',
     'add-slider.php' => 'Slider',
+    'add-gift-slider.php' => 'Gift Slider',
     'add-about-us.php' => 'About Us',
     'add-faq.php' => 'FAQs',
     'help-center.php' => 'Help Center',

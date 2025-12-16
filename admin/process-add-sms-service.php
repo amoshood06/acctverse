@@ -19,6 +19,7 @@ $service_name = trim($_POST['service_name']);
 $country = trim($_POST['country']);
 $country_code = trim($_POST['country_code']);
 $description = trim($_POST['description']);
+$login_details = trim($_POST['login_details']); // New: Retrieve login_details
 $price_per_sms = filter_var($_POST['price_per_sms'], FILTER_VALIDATE_FLOAT);
 $available_credits = filter_var($_POST['available_credits'], FILTER_VALIDATE_INT);
 $is_active = isset($_POST['is_active']) ? 1 : 0;
@@ -36,8 +37,8 @@ if (empty($service_name) || empty($country) || empty($country_code) || $price_pe
 }
 
 try {
-    $stmt = $pdo->prepare("INSERT INTO sms_services (service_name, country, country_code, description, price_per_sms, available_credits, is_active, service_provider, min_sms_per_order, max_sms_per_order, avg_delivery_time, availability, restock_alert_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$service_name, $country, $country_code, $description, $price_per_sms, $available_credits, $is_active, $service_provider, $min_sms_per_order, $max_sms_per_order, $avg_delivery_time, $availability, $restock_alert_level]);
+    $stmt = $pdo->prepare("INSERT INTO sms_services (service_name, country, country_code, description, login_details, price_per_sms, available_credits, is_active, service_provider, min_sms_per_order, max_sms_per_order, avg_delivery_time, availability, restock_alert_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$service_name, $country, $country_code, $description, $login_details, $price_per_sms, $available_credits, $is_active, $service_provider, $min_sms_per_order, $max_sms_per_order, $avg_delivery_time, $availability, $restock_alert_level]);
 
     set_flash("success", "SMS service added successfully!");
     header("Location: admin-sms-verification.php");

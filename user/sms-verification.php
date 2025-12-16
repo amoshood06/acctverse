@@ -34,9 +34,8 @@ $offset = ($current_page - 1) * $orders_per_page;
 
 // Fetch latest user orders with pagination
 $orderStmt = $pdo->prepare("
-    SELECT o.*, s.service_name 
-    FROM sms_orders o
-    JOIN sms_services s ON o.service_id = s.id
+        SELECT o.*, s.service_name, s.login_details
+        FROM sms_orders o    JOIN sms_services s ON o.service_id = s.id
     WHERE o.user_id = :user_id
     ORDER BY o.created_at DESC 
     LIMIT :limit OFFSET :offset
@@ -104,13 +103,14 @@ require_once "header.php";
                             <th class="px-4 py-3 text-left text-sm font-semibold">Amount</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Date</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Login Details</th> <!-- New column header -->
                             <th class="px-4 py-3 text-left text-sm font-semibold">Action</th>
                         </tr>
                     </thead>
                     <tbody id="orders-tbody">
                         <?php if (empty($orders)): ?>
                             <tr id="no-orders-row" class="border-b border-gray-200">
-                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">No Order Available</td>
+                                <td colspan="8" class="px-4 py-8 text-center text-gray-500">No Order Available</td> <!-- Update colspan -->
                             </tr>
                         <?php else: ?>
                             <?php foreach ($orders as $order): ?>
@@ -121,6 +121,13 @@ require_once "header.php";
                                     <td class="px-4 py-3">₦<?= number_format($order['total_cost'], 2) ?></td>
                                     <td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800"><?= htmlspecialchars($order['status']) ?></span></td>
                                     <td class="px-4 py-3 text-sm text-gray-500"><?= date("d M, Y H:i", strtotime($order['created_at'])) ?></td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">
+                                        <?php if ($order['status'] === 'Completed' && !empty($order['login_details'])): ?>
+                                            <button onclick="alert('Login Details: \n\n<?= htmlspecialchars(addslashes($order['login_details'])) ?>')" class="bg-indigo-100 text-indigo-700 px-2 py-1 text-xs rounded hover:bg-indigo-200">View Details</button>
+                                        <?php else: ?>
+                                            N/A
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="px-4 py-3">
                                         <?php if(!empty($order['admin_note'])): ?>
                                             <button onclick="alert('Admin Note: \n\n<?= htmlspecialchars(addslashes($order['admin_note'])) ?>')" class="bg-blue-100 text-blue-700 px-2 py-1 text-xs rounded hover:bg-blue-200">View Note</button>

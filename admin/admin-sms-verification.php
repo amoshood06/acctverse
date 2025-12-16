@@ -65,6 +65,12 @@ $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <textarea name="description" placeholder="Service description and features" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 h-20"></textarea>
                         </div>
 
+                        <!-- Login Details -->
+                        <div class="mb-6">
+                            <label class="block text-blue-900 font-semibold mb-2">Login Details (Sensitive, will be revealed upon purchase)</label>
+                            <textarea name="login_details" placeholder="Sensitive login details for this service (e.g., API keys, credentials, special instructions)" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 h-24"></textarea>
+                        </div>
+
                         <!-- Price & Limits -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div>
