@@ -30,7 +30,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 $pages = [
     'index.php' => 'Dashboard',
-    'admin-users.php' => 'Users',
+    'admins-users.php' => 'Users',
     'manage-products.php' => 'Products',
     'manage-gift-products.php' => 'Manage Gift',
     'admin-orders.php' => 'Product Orders',

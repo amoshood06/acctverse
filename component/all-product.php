@@ -101,11 +101,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <!-- Price -->
                 <p class="text-gray-700">₦<?= number_format($product['price'], 2) ?></p>
 
-                <!-- Stock -->
-                <p class="text-green-600 text-sm font-semibold mb-3">
-                    Stock: <?= intval($product['stock']) ?>
-                </p>
-
                 <!-- View Details Button -->
                 <a href="product-details.php?id=<?= $product['id'] ?>" class="mt-auto">
                     <button 

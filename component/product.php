@@ -47,7 +47,8 @@ foreach ($categories as $cat) {
         <?php if (!empty($allProducts[$category])): ?>
             <?php foreach ($allProducts[$category] as $sub_category_group): ?>
             <!-- Each product gets a unique x-data scope to manage its own modal state -->
-            <div x-data="{ isModalOpen: false, qty: 1, price: <?= $sub_category_group['min_price'] ?> }" class="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+            <div x-data="{ isModalOpen: false, qty: 1, unitPrice: <?= $sub_category_group['min_price'] ?>, totalStock: <?= intval($sub_category_group['total_stock']) ?>,
+                         get totalPrice() { return (this.qty * this.unitPrice).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}); } }" class="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
 
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
@@ -108,26 +109,40 @@ foreach ($categories as $cat) {
                         </p>
 
                         <div class="mt-4">
-                            <strong class="text-gray-700">Quantity: 1</strong>
+                            <label for="quantity-<?= $sub_category_group['product_id'] ?>" class="text-gray-700 font-semibold">Quantity:</label>
+                            <input type="number" 
+                                   id="quantity-<?= $sub_category_group['product_id'] ?>"
+                                   x-model.number="qty" 
+                                   @change="if(qty < 1) qty = 1; if(qty > totalStock) qty = totalStock"
+                                   min="1" 
+                                   x-bind:max="totalStock" 
+                                   class="w-24 px-2 py-1 border rounded-md text-center">
+                            <span class="text-sm text-gray-500"> (Max: <span x-text="totalStock"></span>)</span>
                         </div>
 
                         <!-- Total Price -->
                         <p class="text-green-600 font-semibold mt-3">
-                            Total: ₦<span x-text="price.toLocaleString()"></span>
+                            Total: ₦<span x-text="totalPrice"></span>
                         </p>
 
                         <!-- Buy Form -->
                         <!-- Form now uses POST method and properly binds qty value with x-model.number -->
-                        <form action="buy-product.php" method="POST" class="mt-5">
-                            <input type="hidden" name="product_id" value="<?= $sub_category_group['product_id'] ?>">
-                            <input type="hidden" name="quantity" value="1">
-
-                            <button type="submit" 
-                                class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">
-                                Buy Now
-                            </button>
-                        </form>
-
+                                                    <form x-ref="buyForm" action="buy-product.php" method="POST" class="mt-5">
+                                                        <input type="hidden" name="product_id" value="<?= $sub_category_group['product_id'] ?>">
+                                                        <input type="hidden" name="quantity" x-model.number="qty">
+                        
+                                                        <button type="button"
+                                                            @click="
+                                                                if (qty > 1) {
+                                                                    window.location.href = 'confirm-multi-purchase.php?sub_category=<?= urlencode($sub_category_group['sub_category']) ?>&quantity=' + qty;
+                                                                } else {
+                                                                    $refs.buyForm.submit();
+                                                                }
+                                                            "
+                                                            class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold text-sm">
+                                                            Buy Now
+                                                        </button>
+                                                    </form>
                         <!-- Close Modal -->
                         <button @click="isModalOpen = false" 
                                 class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">

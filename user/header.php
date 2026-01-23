@@ -4,8 +4,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 $pages = [
     'index.php' => 'Dashboard',
-    'products.php' => 'Products',
-    'gifts-products.php' => 'Gift Products',
     'order-history.php' => 'Orders',
     'sms-verification.php' => 'SMS Services',
     'referral.php' => 'Refer & Earn',
