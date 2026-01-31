@@ -46,7 +46,7 @@
         <div id="subscription-ui">
           <p class="text-gray-500 mb-4 font-medium px-2">Ready for the journey? Join the waitlist.</p>
           <form class="flex flex-col sm:flex-row gap-2" onsubmit="handleSubscribe(event)">
-            <input type="email" id="email-input" placeholder="astronaut@space.com" required
+            <input type="email" id="email-input" placeholder="notify@acctverse.com" required
                    class="flex-1 px-4 py-3 rounded-lg bg-gray-100 border-2 border-transparent focus:border-indigo-300 focus:bg-white transition duration-200 outline-none">
             <button type="submit" 
                     class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition duration-200 shadow-lg active:scale-95">
